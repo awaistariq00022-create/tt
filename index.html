@@ -173,6 +173,55 @@
   .outcome-miss{color:var(--red);font-weight:600}
   .outcome-pend{color:var(--gold)}
 
+  /* ══ DEMO TRADING ══ */
+  .demo-layout{display:grid;grid-template-columns:320px 1fr;gap:12px}
+  .demo-panel{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden}
+  .demo-panel-head{padding:11px 14px;border-bottom:0.5px solid var(--border);font-size:12px;font-weight:500;display:flex;align-items:center;justify-content:space-between}
+  .wallet-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px}
+  .w-box{background:var(--bg3);border-radius:8px;padding:10px 12px}
+  .w-l{font-size:10px;color:var(--t3);margin-bottom:3px}
+  .w-v{font-size:16px;font-weight:600}
+  .w-s{font-size:10px;color:var(--t3);margin-top:2px}
+  .order-form{padding:12px;display:flex;flex-direction:column;gap:10px}
+  .form-row{display:flex;flex-direction:column;gap:4px}
+  .form-label{font-size:10px;color:var(--t3)}
+  .form-input{background:var(--bg3);border:0.5px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--t1);font-size:12px;font-family:'Inter',sans-serif;outline:none;width:100%}
+  .form-input:focus{border-color:var(--blue)}
+  .form-select{background:var(--bg3);border:0.5px solid var(--border2);border-radius:6px;padding:7px 10px;color:var(--t1);font-size:12px;font-family:'Inter',sans-serif;outline:none;width:100%;cursor:pointer}
+  .side-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+  .btn-buy{padding:10px;border-radius:7px;border:none;background:rgba(16,185,129,.15);color:var(--green);font-size:13px;font-weight:600;cursor:pointer;border:0.5px solid rgba(16,185,129,.3);transition:all .15s;font-family:'Inter',sans-serif}
+  .btn-buy:hover{background:rgba(16,185,129,.25)}
+  .btn-sell{padding:10px;border-radius:7px;border:none;background:rgba(239,68,68,.15);color:var(--red);font-size:13px;font-weight:600;cursor:pointer;border:0.5px solid rgba(239,68,68,.3);transition:all .15s;font-family:'Inter',sans-serif}
+  .btn-sell:hover{background:rgba(239,68,68,.25)}
+  .lev-pills{display:flex;gap:4px;flex-wrap:wrap}
+  .lev-pill{padding:4px 10px;border-radius:5px;font-size:11px;cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--t2);font-family:'Inter',sans-serif;transition:all .12s}
+  .lev-pill.on{background:rgba(245,158,11,.15);color:var(--gold);border-color:rgba(245,158,11,.4)}
+  .pos-row{display:grid;grid-template-columns:70px 55px 75px 75px 70px 70px 75px 70px;padding:8px 12px;border-bottom:0.5px solid var(--border);align-items:center;font-size:11px;gap:4px}
+  .pos-head{display:grid;grid-template-columns:70px 55px 75px 75px 70px 70px 75px 70px;padding:7px 12px;font-size:10px;color:var(--t3);border-bottom:0.5px solid var(--border);gap:4px}
+  .pos-row:last-child{border-bottom:none}
+  .pos-row:hover{background:var(--bg3)}
+  .cl-btn{padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer;border:0.5px solid rgba(239,68,68,.4);background:rgba(239,68,68,.08);color:var(--red);font-family:'Inter',sans-serif;transition:all .12s}
+  .cl-btn:hover{background:rgba(239,68,68,.2)}
+  .dtrade-head{display:grid;grid-template-columns:70px 55px 65px 75px 75px 70px 70px 70px 80px;padding:7px 12px;font-size:10px;color:var(--t3);border-bottom:0.5px solid var(--border);gap:4px}
+  .dtrade-row{display:grid;grid-template-columns:70px 55px 65px 75px 75px 70px 70px 70px 80px;padding:8px 12px;border-bottom:0.5px solid var(--border);align-items:center;font-size:11px;gap:4px}
+  .dtrade-row:hover{background:var(--bg3)}
+  .pnl-pos{color:var(--green);font-weight:600}
+  .pnl-neg{color:var(--red);font-weight:600}
+  .toast{position:fixed;bottom:20px;right:20px;padding:10px 18px;border-radius:8px;font-size:12px;font-weight:500;z-index:999;animation:slideup .3s ease;pointer-events:none}
+  @keyframes slideup{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .toast.buy{background:rgba(16,185,129,.9);color:#fff}
+  .toast.sell{background:rgba(239,68,68,.9);color:#fff}
+  .toast.warn{background:rgba(245,158,11,.9);color:#000}
+  .toast.close{background:rgba(59,130,246,.9);color:#fff}
+  .tab-pills{display:flex;gap:2px;padding:8px 12px;border-bottom:0.5px solid var(--border)}
+  .tab-pill{padding:4px 12px;border-radius:5px;font-size:11px;cursor:pointer;color:var(--t3);border:none;background:transparent;font-family:'Inter',sans-serif;transition:all .12s}
+  .tab-pill.on{color:var(--blue);background:rgba(59,130,246,.12)}
+  .qty-pct{display:flex;gap:4px}
+  .qty-p{flex:1;padding:4px;border-radius:4px;font-size:10px;cursor:pointer;border:0.5px solid var(--border2);background:transparent;color:var(--t3);font-family:'Inter',sans-serif;text-align:center;transition:all .12s}
+  .qty-p:hover{color:var(--t1);background:var(--bg3)}
+
+  @media(max-width:1100px){.demo-layout{grid-template-columns:1fr}}
+
   @media(max-width:900px){
     .sidebar{display:none}
     .strip{grid-template-columns:1fr 1fr}
@@ -200,6 +249,7 @@
     <button class="tab" onclick="show('news',this)">News</button>
     <button class="tab" onclick="show('orderbook',this)">Order Book</button>
     <button class="tab" onclick="show('history',this)">📋 History</button>
+    <button class="tab" onclick="show('demo',this)" style="color:#f59e0b;border:0.5px solid rgba(245,158,11,.3)">🎮 Demo Trade</button>
   </div>
   <div class="live-badge">
     <div class="dot" id="live-dot"></div>
@@ -402,6 +452,180 @@
           Signals are auto-recorded when generated. Outcomes update automatically every 10 minutes based on live prices.
         </div>
         <div id="history-table"><div class="loading"><div class="spinner"></div>No signals recorded yet — signals will appear here when generated.</div></div>
+      </div>
+    </div>
+
+    <!-- DEMO TRADING -->
+    <div class="view" id="view-demo">
+
+      <!-- TOP WALLET STATS -->
+      <div class="strip" style="grid-template-columns:repeat(6,1fr)">
+        <div class="stat"><div class="stat-l">💰 Total Balance</div><div class="stat-v" style="color:var(--blue)" id="dm-balance">$10,000</div><div class="stat-s">Virtual USDT</div></div>
+        <div class="stat"><div class="stat-l">📦 In Positions</div><div class="stat-v" style="color:var(--gold)" id="dm-inpos">$0</div><div class="stat-s">Margin used</div></div>
+        <div class="stat"><div class="stat-l">✅ Available</div><div class="stat-v" style="color:var(--green)" id="dm-avail">$10,000</div><div class="stat-s">Free to trade</div></div>
+        <div class="stat"><div class="stat-l">📈 Unrealized P&L</div><div class="stat-v" id="dm-upnl">$0.00</div><div class="stat-s" id="dm-upnl-s">Open positions</div></div>
+        <div class="stat"><div class="stat-l">💵 Realized P&L</div><div class="stat-v" id="dm-rpnl">$0.00</div><div class="stat-s">Closed trades</div></div>
+        <div class="stat">
+          <div class="stat-l">⚙️ Actions</div>
+          <button onclick="resetWallet()" style="margin-top:4px;padding:5px 10px;border-radius:6px;border:0.5px solid rgba(245,158,11,.4);background:rgba(245,158,11,.08);color:var(--gold);font-size:10px;cursor:pointer;font-family:Inter,sans-serif">🔄 Reset Wallet</button>
+        </div>
+      </div>
+
+      <div class="demo-layout">
+
+        <!-- LEFT: ORDER FORM -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+
+          <div class="demo-panel">
+            <div class="demo-panel-head">
+              <span>📝 Place Order</span>
+              <span id="dm-cur-price" style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--green)">—</span>
+            </div>
+            <div class="order-form">
+
+              <!-- Coin selector -->
+              <div class="form-row">
+                <div class="form-label">Select Coin</div>
+                <select class="form-select" id="dm-coin" onchange="dmUpdatePrice()">
+                  <option value="BTC">BTC — Bitcoin</option>
+                  <option value="ETH">ETH — Ethereum</option>
+                  <option value="SOL">SOL — Solana</option>
+                  <option value="BNB">BNB — BNB</option>
+                  <option value="XRP">XRP — XRP</option>
+                  <option value="ADA">ADA — Cardano</option>
+                  <option value="DOGE">DOGE — Dogecoin</option>
+                  <option value="TRX">TRX — TRON</option>
+                  <option value="LINK">LINK — Chainlink</option>
+                  <option value="AVAX">AVAX — Avalanche</option>
+                </select>
+              </div>
+
+              <!-- Order Type -->
+              <div class="form-row">
+                <div class="form-label">Order Type</div>
+                <select class="form-select" id="dm-type" onchange="dmToggleLimit()">
+                  <option value="market">Market Order (Turant)</option>
+                  <option value="limit">Limit Order (Price set karke)</option>
+                </select>
+              </div>
+
+              <!-- Limit price (hidden for market) -->
+              <div class="form-row" id="dm-limit-row" style="display:none">
+                <div class="form-label">Limit Price (USDT)</div>
+                <input class="form-input" type="number" id="dm-limit-price" placeholder="Enter target price…" step="0.0001">
+              </div>
+
+              <!-- Leverage -->
+              <div class="form-row">
+                <div class="form-label">Leverage</div>
+                <div class="lev-pills" id="dm-lev-pills">
+                  <button class="lev-pill on" onclick="dmSetLev(1,this)">1x</button>
+                  <button class="lev-pill" onclick="dmSetLev(2,this)">2x</button>
+                  <button class="lev-pill" onclick="dmSetLev(5,this)">5x</button>
+                  <button class="lev-pill" onclick="dmSetLev(10,this)">10x</button>
+                  <button class="lev-pill" onclick="dmSetLev(20,this)">20x</button>
+                  <button class="lev-pill" onclick="dmSetLev(50,this)">50x</button>
+                </div>
+              </div>
+
+              <!-- Amount USDT -->
+              <div class="form-row">
+                <div class="form-label">Amount (USDT)</div>
+                <input class="form-input" type="number" id="dm-amount" placeholder="Enter USDT amount…" value="100" min="1" oninput="dmCalcQty()">
+                <div class="qty-pct" style="margin-top:4px">
+                  <button class="qty-p" onclick="dmSetPct(10)">10%</button>
+                  <button class="qty-p" onclick="dmSetPct(25)">25%</button>
+                  <button class="qty-p" onclick="dmSetPct(50)">50%</button>
+                  <button class="qty-p" onclick="dmSetPct(75)">75%</button>
+                  <button class="qty-p" onclick="dmSetPct(100)">100%</button>
+                </div>
+              </div>
+
+              <!-- Stop Loss -->
+              <div class="form-row">
+                <div class="form-label">Stop Loss (USDT) <span style="color:var(--t3)">(optional)</span></div>
+                <input class="form-input" type="number" id="dm-sl" placeholder="e.g. 63000" step="0.0001">
+              </div>
+
+              <!-- Take Profit -->
+              <div class="form-row">
+                <div class="form-label">Take Profit (USDT) <span style="color:var(--t3)">(optional)</span></div>
+                <input class="form-input" type="number" id="dm-tp" placeholder="e.g. 67000" step="0.0001">
+              </div>
+
+              <!-- Quantity preview -->
+              <div style="background:var(--bg3);border-radius:7px;padding:10px 12px;font-size:11px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="color:var(--t3)">Coin Quantity</span>
+                  <span id="dm-qty-preview" style="font-family:'JetBrains Mono',monospace;color:var(--t1)">—</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="color:var(--t3)">Leverage</span>
+                  <span id="dm-lev-preview" style="color:var(--gold)">1x</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+                  <span style="color:var(--t3)">Position Size</span>
+                  <span id="dm-pos-preview" style="color:var(--blue)">—</span>
+                </div>
+                <div style="display:flex;justify-content:space-between">
+                  <span style="color:var(--t3)">Est. Liquidation</span>
+                  <span id="dm-liq-preview" style="color:var(--red)">—</span>
+                </div>
+              </div>
+
+              <div class="side-btns">
+                <button class="btn-buy" onclick="dmPlaceOrder('buy')">📈 BUY / LONG</button>
+                <button class="btn-sell" onclick="dmPlaceOrder('sell')">📉 SELL / SHORT</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI Signal Suggestion -->
+          <div class="demo-panel">
+            <div class="demo-panel-head">🤖 AI Signal Suggestion</div>
+            <div id="dm-ai-suggest" style="padding:12px;font-size:11px;color:var(--t2);line-height:1.7">
+              Signals tab se data load hone ke baad AI suggestion yahan aayega…
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: POSITIONS + HISTORY -->
+        <div style="display:flex;flex-direction:column;gap:10px">
+
+          <!-- Open Positions -->
+          <div class="demo-panel">
+            <div class="demo-panel-head">
+              <span>📊 Open Positions (<span id="dm-pos-count">0</span>)</span>
+              <button onclick="dmCloseAll()" class="btn" style="color:var(--red);font-size:10px">Close All</button>
+            </div>
+            <div id="dm-positions">
+              <div style="text-align:center;padding:24px;color:var(--t3);font-size:12px">Abhi koi open position nahi hai.</div>
+            </div>
+          </div>
+
+          <!-- Pending Limit Orders -->
+          <div class="demo-panel">
+            <div class="demo-panel-head">
+              <span>⏳ Pending Limit Orders (<span id="dm-pend-count">0</span>)</span>
+              <button onclick="dmCancelAllLimits()" class="btn" style="color:var(--gold);font-size:10px">Cancel All</button>
+            </div>
+            <div id="dm-pending-orders">
+              <div style="text-align:center;padding:16px;color:var(--t3);font-size:12px">Koi pending order nahi.</div>
+            </div>
+          </div>
+
+          <!-- Trade History -->
+          <div class="demo-panel">
+            <div class="demo-panel-head">
+              <span>📜 Trade History</span>
+              <button onclick="dmClearTrades()" class="btn" style="color:var(--t3);font-size:10px">Clear</button>
+            </div>
+            <div id="dm-trade-history">
+              <div style="text-align:center;padding:24px;color:var(--t3);font-size:12px">Koi closed trade nahi abhi tak.</div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
 
@@ -1336,6 +1560,7 @@ function show(v,el){
   if(v==='orderbook') renderOB();
   if(v==='chart') loadTVChart();
   if(v==='history'){ checkPendingSignals(); renderHistory(); }
+  if(v==='demo'){ dmRender(); dmUpdatePrice(); }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1350,19 +1575,455 @@ function timeAgo(date){
 }
 
 // ═══════════════════════════════════════════════════════════
-// INIT — Run full pipeline
+// DEMO TRADING ENGINE
 // ═══════════════════════════════════════════════════════════
+const DM_START = 10000;
+let dmWallet = {
+  balance: DM_START,
+  realizedPnl: 0,
+};
+let dmPositions    = []; // open positions
+let dmPendingOrders= []; // pending limit orders
+let dmTradeHistory = []; // closed trades
+let dmLeverage     = 1;
+
+// ── Persist ──
+function dmSave(){
+  try {
+    localStorage.setItem('dm_wallet',    JSON.stringify(dmWallet));
+    localStorage.setItem('dm_positions', JSON.stringify(dmPositions));
+    localStorage.setItem('dm_pending',   JSON.stringify(dmPendingOrders));
+    localStorage.setItem('dm_history',   JSON.stringify(dmTradeHistory.slice(0,200)));
+  } catch(e){}
+}
+function dmLoad(){
+  try {
+    const w = localStorage.getItem('dm_wallet');    if(w) dmWallet        = JSON.parse(w);
+    const p = localStorage.getItem('dm_positions'); if(p) dmPositions     = JSON.parse(p);
+    const o = localStorage.getItem('dm_pending');   if(o) dmPendingOrders = JSON.parse(o);
+    const h = localStorage.getItem('dm_history');   if(h) dmTradeHistory  = JSON.parse(h);
+  } catch(e){}
+}
+
+// ── Toast notification ──
+function dmToast(msg, type='buy'){
+  const t = document.createElement('div');
+  t.className = 'toast '+type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+
+// ── Reset wallet ──
+function resetWallet(){
+  if(!confirm('Wallet reset karna chahte hain? Sab positions aur history delete ho jayegi.')) return;
+  dmWallet = {balance: DM_START, realizedPnl: 0};
+  dmPositions = []; dmPendingOrders = []; dmTradeHistory = [];
+  dmSave(); dmRender();
+  dmToast('✅ Wallet reset — $10,000 se shuru!', 'close');
+}
+
+// ── Get current coin price ──
+function dmGetPrice(sym){
+  const c = COINS.find(x=>x.sym===sym);
+  return (c && c.price > 0) ? c.price : null;
+}
+
+// ── Update price display when coin changes ──
+function dmUpdatePrice(){
+  const sym = document.getElementById('dm-coin').value;
+  const p   = dmGetPrice(sym);
+  const el  = document.getElementById('dm-cur-price');
+  if(el) el.textContent = p ? '$'+fmt(p) : 'Loading…';
+  dmCalcQty();
+  dmUpdateAISuggest();
+}
+
+// ── Leverage setter ──
+function dmSetLev(v, el){
+  dmLeverage = v;
+  document.querySelectorAll('.lev-pill').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  const lp = document.getElementById('dm-lev-preview');
+  if(lp) lp.textContent = v+'x';
+  dmCalcQty();
+}
+
+// ── Toggle limit price input ──
+function dmToggleLimit(){
+  const t  = document.getElementById('dm-type').value;
+  const lr = document.getElementById('dm-limit-row');
+  if(lr) lr.style.display = t==='limit' ? 'flex' : 'none';
+}
+
+// ── Calculate quantity preview ──
+function dmCalcQty(){
+  const sym  = document.getElementById('dm-coin')?.value;
+  const amt  = parseFloat(document.getElementById('dm-amount')?.value)||0;
+  const p    = dmGetPrice(sym)||0;
+  if(!p||!amt){ return; }
+  const posSize = amt * dmLeverage;
+  const qty     = posSize / p;
+  const liqDist = 1 / dmLeverage;
+  const liqPrice = 0; // calculated per side on open
+
+  const qp  = document.getElementById('dm-qty-preview');
+  const pp  = document.getElementById('dm-pos-preview');
+  const lp2 = document.getElementById('dm-liq-preview');
+  if(qp) qp.textContent = qty.toFixed(6)+' '+sym;
+  if(pp) pp.textContent = '$'+fmt(posSize);
+  if(lp2) lp2.textContent = '~'+((liqDist*100).toFixed(1))+'% from entry';
+}
+
+// ── Set amount by percentage of available ──
+function dmSetPct(pct){
+  const avail = dmWallet.balance;
+  const inp   = document.getElementById('dm-amount');
+  if(inp){ inp.value = (avail * pct / 100).toFixed(2); dmCalcQty(); }
+}
+
+// ── Place order ──
+function dmPlaceOrder(side){
+  const sym   = document.getElementById('dm-coin').value;
+  const type  = document.getElementById('dm-type').value;
+  const amt   = parseFloat(document.getElementById('dm-amount')?.value)||0;
+  const slVal = parseFloat(document.getElementById('dm-sl')?.value)||null;
+  const tpVal = parseFloat(document.getElementById('dm-tp')?.value)||null;
+  const lev   = dmLeverage;
+
+  if(amt <= 0){ dmToast('⚠️ Amount enter karein!','warn'); return; }
+  if(amt > dmWallet.balance){ dmToast('⚠️ Balance kam hai!','warn'); return; }
+
+  const price = dmGetPrice(sym);
+  if(!price){ dmToast('⚠️ Price load nahi hui — thoda wait karein!','warn'); return; }
+
+  const margin   = amt;
+  const posSize  = margin * lev;
+  const qty      = posSize / price;
+  const liqPct   = 0.9 / lev;
+  const liqPrice = side==='buy' ? price*(1-liqPct) : price*(1+liqPct);
+
+  if(type === 'market'){
+    // Deduct margin from balance
+    dmWallet.balance -= margin;
+
+    const pos = {
+      id:      Date.now()+'_'+sym,
+      ts:      Date.now(),
+      sym, side, type:'market',
+      entry:   price,
+      qty, margin, posSize, lev,
+      sl:      slVal, tp: tpVal,
+      liqPrice,
+    };
+    dmPositions.push(pos);
+    dmSave(); dmRender();
+    dmToast(`✅ ${side==='buy'?'BUY':'SELL'} ${sym} @ $${fmt(price)} | ${lev}x | $${fmt(posSize)} position`, side==='buy'?'buy':'sell');
+
+  } else {
+    // Limit order
+    const limitP = parseFloat(document.getElementById('dm-limit-price')?.value)||0;
+    if(!limitP){ dmToast('⚠️ Limit price enter karein!','warn'); return; }
+
+    // Reserve margin
+    dmWallet.balance -= margin;
+
+    const ord = {
+      id:    Date.now()+'_'+sym,
+      ts:    Date.now(),
+      sym, side, type:'limit',
+      limitPrice: limitP,
+      qty, margin, posSize, lev,
+      sl: slVal, tp: tpVal, liqPrice,
+    };
+    dmPendingOrders.push(ord);
+    dmSave(); dmRender();
+    dmToast(`⏳ Limit ${side==='buy'?'BUY':'SELL'} ${sym} @ $${fmt(limitP)} set!`, 'close');
+  }
+}
+
+// ── Close a position ──
+function dmClosePosition(id){
+  const idx = dmPositions.findIndex(p=>p.id===id);
+  if(idx===-1) return;
+  const pos   = dmPositions[idx];
+  const price = dmGetPrice(pos.sym)||pos.entry;
+  const pnl   = pos.side==='buy'
+    ? (price - pos.entry) * pos.qty
+    : (pos.entry - price) * pos.qty;
+
+  dmWallet.balance     += pos.margin + pnl;
+  dmWallet.realizedPnl += pnl;
+  dmPositions.splice(idx,1);
+
+  dmTradeHistory.unshift({
+    id: pos.id, ts: Date.now(), openTs: pos.ts,
+    sym: pos.sym, side: pos.side,
+    entry: pos.entry, exit: price,
+    qty: pos.qty, margin: pos.margin, lev: pos.lev,
+    pnl: pnl, type: 'Manual Close'
+  });
+  dmSave(); dmRender();
+  dmToast(`${pnl>=0?'✅ Profit':'❌ Loss'}: ${pos.sym} closed | ${pnl>=0?'+':''}$${fmt(Math.abs(pnl))}`, pnl>=0?'buy':'sell');
+}
+
+// ── Close all positions ──
+function dmCloseAll(){
+  if(!dmPositions.length){ dmToast('Koi open position nahi!','warn'); return; }
+  [...dmPositions].forEach(p=>dmClosePosition(p.id));
+}
+
+// ── Cancel a limit order ──
+function dmCancelLimit(id){
+  const idx = dmPendingOrders.findIndex(o=>o.id===id);
+  if(idx===-1) return;
+  const ord = dmPendingOrders[idx];
+  dmWallet.balance += ord.margin; // refund
+  dmPendingOrders.splice(idx,1);
+  dmSave(); dmRender();
+  dmToast(`🗑️ Limit order cancel: ${ord.sym}`,'close');
+}
+
+// ── Cancel all limits ──
+function dmCancelAllLimits(){
+  [...dmPendingOrders].forEach(o=>dmCancelLimit(o.id));
+}
+
+// ── Clear trade history ──
+function dmClearTrades(){
+  if(!confirm('Trade history clear karein?')) return;
+  dmTradeHistory=[];
+  dmSave(); dmRender();
+}
+
+// ── Check limit orders & SL/TP every price tick ──
+function dmCheckAutoClose(){
+  const now = Date.now();
+
+  // 1. Check pending limit orders
+  dmPendingOrders.slice().forEach(ord=>{
+    const price = dmGetPrice(ord.sym);
+    if(!price) return;
+    const triggered = ord.side==='buy' ? price<=ord.limitPrice : price>=ord.limitPrice;
+    if(triggered){
+      const idx = dmPendingOrders.findIndex(o=>o.id===ord.id);
+      if(idx===-1) return;
+      dmPendingOrders.splice(idx,1);
+      const liqPct   = 0.9/ord.lev;
+      const liqPrice = ord.side==='buy' ? price*(1-liqPct) : price*(1+liqPct);
+      dmPositions.push({...ord, entry:price, type:'limit-exec', liqPrice, ts:now});
+      dmToast(`⚡ Limit filled! ${ord.sym} ${ord.side==='buy'?'BUY':'SELL'} @ $${fmt(price)}`,'close');
+    }
+  });
+
+  // 2. Check SL / TP / Liquidation on open positions
+  dmPositions.slice().forEach(pos=>{
+    const price = dmGetPrice(pos.sym);
+    if(!price) return;
+    const buy = pos.side==='buy';
+
+    // Liquidation
+    const liqHit = buy ? price<=pos.liqPrice : price>=pos.liqPrice;
+    if(liqHit){
+      const pnl = -pos.margin;
+      dmWallet.balance += 0; // margin lost
+      dmWallet.realizedPnl += pnl;
+      const idx = dmPositions.findIndex(p=>p.id===pos.id);
+      if(idx!==-1) dmPositions.splice(idx,1);
+      dmTradeHistory.unshift({...pos,exit:price,pnl,type:'Liquidated',ts:Date.now(),openTs:pos.ts});
+      dmToast(`💥 LIQUIDATED: ${pos.sym} — $${fmt(pos.margin)} margin lost!`,'sell');
+      dmSave(); dmRender(); return;
+    }
+
+    // Take Profit
+    if(pos.tp){
+      const tpHit = buy ? price>=pos.tp : price<=pos.tp;
+      if(tpHit){
+        const pnl=(buy?(price-pos.entry):(pos.entry-price))*pos.qty;
+        dmWallet.balance += pos.margin+pnl; dmWallet.realizedPnl+=pnl;
+        const idx=dmPositions.findIndex(p=>p.id===pos.id);
+        if(idx!==-1) dmPositions.splice(idx,1);
+        dmTradeHistory.unshift({...pos,exit:price,pnl,type:'Take Profit ✅',ts:Date.now(),openTs:pos.ts});
+        dmToast(`🎯 TP Hit! ${pos.sym} +$${fmt(pnl)}`,'buy');
+        dmSave(); dmRender(); return;
+      }
+    }
+
+    // Stop Loss
+    if(pos.sl){
+      const slHit = buy ? price<=pos.sl : price>=pos.sl;
+      if(slHit){
+        const pnl=(buy?(price-pos.entry):(pos.entry-price))*pos.qty;
+        dmWallet.balance += pos.margin+pnl; dmWallet.realizedPnl+=pnl;
+        const idx=dmPositions.findIndex(p=>p.id===pos.id);
+        if(idx!==-1) dmPositions.splice(idx,1);
+        dmTradeHistory.unshift({...pos,exit:price,pnl,type:'Stop Loss ❌',ts:Date.now(),openTs:pos.ts});
+        dmToast(`🛑 SL Hit! ${pos.sym} $${fmt(pnl)}`,'sell');
+        dmSave(); dmRender(); return;
+      }
+    }
+  });
+}
+
+// ── AI suggest based on signal ──
+function dmUpdateAISuggest(){
+  const sym  = document.getElementById('dm-coin')?.value;
+  const coin = COINS.find(c=>c.sym===sym);
+  const el   = document.getElementById('dm-ai-suggest');
+  if(!el||!coin||!coin.price) return;
+  const fg   = globalFGIndex||50;
+  const ns   = globalNewsSentiment||0;
+  const buy  = coin.sig?.includes('Buy')||(!coin.sig?.includes('Sell')&&coin.chg>=0);
+  const col  = buy?'var(--green)':'var(--red)';
+  const sl   = buy ? coin.price*0.964 : coin.price*1.036;
+  const tp   = buy ? coin.price*1.054 : coin.price*0.946;
+  el.innerHTML = `
+    <div style="margin-bottom:8px"><strong style="color:${col}">${buy?'📈 BUY':'📉 SELL'} ${sym}/USDT</strong> &nbsp;<span style="color:var(--t3)">Confidence: <strong style="color:${col}">${coin.conf||'—'}%</strong></span></div>
+    <div style="color:var(--t3);line-height:1.8;font-size:11px">
+      • Signal: <strong style="color:${col}">${coin.sig||'—'}</strong><br>
+      • Entry: <strong>$${fmt(coin.price)}</strong><br>
+      • Suggested SL: <strong style="color:var(--red)">$${fmt(sl)}</strong><br>
+      • Suggested TP: <strong style="color:var(--green)">$${fmt(tp)}</strong><br>
+      • F&G Index: <strong>${fg}</strong> | News Sentiment: <strong>${ns>0?'+':''}${ns}</strong><br>
+      • 24H Change: <strong style="color:${coin.chg>=0?'var(--green)':'var(--red)'}">${coin.chg>=0?'+':''}${(coin.chg||0).toFixed(2)}%</strong>
+    </div>
+    <div style="display:flex;gap:6px;margin-top:10px">
+      <button onclick="dmApplySuggest('${sym}','${buy?'buy':'sell'}',${sl.toFixed(4)},${tp.toFixed(4)})"
+        style="flex:1;padding:7px;border-radius:6px;border:0.5px solid ${col};background:${buy?'rgba(16,185,129,.1)':'rgba(239,68,68,.1)'};color:${col};font-size:11px;cursor:pointer;font-family:Inter,sans-serif">
+        ⚡ Apply Signal to Order Form
+      </button>
+    </div>`;
+}
+
+function dmApplySuggest(sym, side, sl, tp){
+  const coinSel = document.getElementById('dm-coin');
+  if(coinSel) coinSel.value = sym;
+  const slInp = document.getElementById('dm-sl');
+  const tpInp = document.getElementById('dm-tp');
+  if(slInp) slInp.value = sl;
+  if(tpInp) tpInp.value = tp;
+  dmUpdatePrice();
+  if(side==='buy') dmToast('✅ BUY signal applied — Order form mein check karein!','buy');
+  else dmToast('📉 SELL signal applied — Order form mein check karein!','sell');
+}
+
+// ── Render all demo UI ──
+function dmRender(){
+  // Compute unrealized P&L
+  let upnl = 0;
+  let inPos = 0;
+  dmPositions.forEach(pos=>{
+    const price = dmGetPrice(pos.sym)||pos.entry;
+    const pnl   = pos.side==='buy' ? (price-pos.entry)*pos.qty : (pos.entry-price)*pos.qty;
+    upnl  += pnl;
+    inPos += pos.margin;
+  });
+
+  const avail = dmWallet.balance;
+  const total = avail + inPos + upnl;
+
+  // Wallet strip
+  const el=(id,v,c)=>{const e=document.getElementById(id);if(e){e.textContent=v;if(c)e.style.color=c;}};
+  el('dm-balance','$'+fmt(total), total>=DM_START?'var(--green)':'var(--red)');
+  el('dm-inpos',  '$'+fmt(inPos));
+  el('dm-avail',  '$'+fmt(avail), avail>0?'var(--green)':'var(--red)');
+  el('dm-upnl',   (upnl>=0?'+':'')+' $'+fmt(Math.abs(upnl)), upnl>=0?'var(--green)':'var(--red)');
+  el('dm-upnl-s', upnl>=0?'Unrealized profit':'Unrealized loss');
+  const rp=dmWallet.realizedPnl;
+  el('dm-rpnl', (rp>=0?'+':'')+' $'+fmt(Math.abs(rp)), rp>=0?'var(--green)':'var(--red)');
+
+  // Open positions
+  const posEl = document.getElementById('dm-positions');
+  const pcEl  = document.getElementById('dm-pos-count');
+  if(pcEl) pcEl.textContent = dmPositions.length;
+  if(posEl){
+    if(!dmPositions.length){
+      posEl.innerHTML='<div style="text-align:center;padding:24px;color:var(--t3);font-size:12px">Abhi koi open position nahi hai.</div>';
+    } else {
+      posEl.innerHTML = `<div class="pos-head"><div>Coin</div><div>Side</div><div>Entry</div><div>Current</div><div>Qty</div><div>Lev</div><div>P&L</div><div>Action</div></div>`
+        + dmPositions.map(pos=>{
+          const price = dmGetPrice(pos.sym)||pos.entry;
+          const pnl   = pos.side==='buy'?(price-pos.entry)*pos.qty:(pos.entry-price)*pos.qty;
+          const pct   = (pnl/pos.margin*100).toFixed(2);
+          const col   = pnl>=0?'var(--green)':'var(--red)';
+          return `<div class="pos-row">
+            <div style="font-weight:500">${pos.sym}</div>
+            <div><span class="pill" style="background:${pos.side==='buy'?'rgba(16,185,129,.15)':'rgba(239,68,68,.15)'};color:${pos.side==='buy'?'var(--green)':'var(--red)'}">${pos.side==='buy'?'LONG':'SHORT'}</span></div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px">$${fmt(pos.entry)}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px">$${fmt(price)}</div>
+            <div style="font-size:10px;color:var(--t2)">${pos.qty.toFixed(4)}</div>
+            <div style="color:var(--gold)">${pos.lev}x</div>
+            <div class="${pnl>=0?'pnl-pos':'pnl-neg'}">${pnl>=0?'+':''} $${fmt(Math.abs(pnl))}<br><span style="font-size:9px;color:${col}">${pnl>=0?'+':''}${pct}%</span></div>
+            <div><button class="cl-btn" onclick="dmClosePosition('${pos.id}')">Close</button></div>
+          </div>`;
+        }).join('');
+    }
+  }
+
+  // Pending limit orders
+  const pendEl  = document.getElementById('dm-pending-orders');
+  const pendCEl = document.getElementById('dm-pend-count');
+  if(pendCEl) pendCEl.textContent = dmPendingOrders.length;
+  if(pendEl){
+    if(!dmPendingOrders.length){
+      pendEl.innerHTML='<div style="text-align:center;padding:16px;color:var(--t3);font-size:12px">Koi pending order nahi.</div>';
+    } else {
+      pendEl.innerHTML = `<div style="display:grid;grid-template-columns:70px 55px 85px 70px 70px 70px;padding:7px 12px;font-size:10px;color:var(--t3);border-bottom:0.5px solid var(--border);gap:4px"><div>Coin</div><div>Side</div><div>Limit Price</div><div>Margin</div><div>Lev</div><div>Action</div></div>`
+        + dmPendingOrders.map(ord=>`<div style="display:grid;grid-template-columns:70px 55px 85px 70px 70px 70px;padding:8px 12px;border-bottom:0.5px solid var(--border);align-items:center;font-size:11px;gap:4px">
+          <div style="font-weight:500">${ord.sym}</div>
+          <div><span class="pill" style="background:${ord.side==='buy'?'rgba(16,185,129,.12)':'rgba(239,68,68,.12)'};color:${ord.side==='buy'?'var(--green)':'var(--red)'}">${ord.side==='buy'?'BUY':'SELL'}</span></div>
+          <div style="font-family:'JetBrains Mono',monospace;color:var(--gold)">$${fmt(ord.limitPrice)}</div>
+          <div>$${fmt(ord.margin)}</div>
+          <div style="color:var(--gold)">${ord.lev}x</div>
+          <div><button class="cl-btn" style="border-color:rgba(245,158,11,.4);color:var(--gold)" onclick="dmCancelLimit('${ord.id}')">Cancel</button></div>
+        </div>`).join('');
+    }
+  }
+
+  // Trade history
+  const histEl = document.getElementById('dm-trade-history');
+  if(histEl){
+    if(!dmTradeHistory.length){
+      histEl.innerHTML='<div style="text-align:center;padding:24px;color:var(--t3);font-size:12px">Koi closed trade nahi abhi tak.</div>';
+    } else {
+      histEl.innerHTML = `<div class="dtrade-head"><div>Time</div><div>Coin</div><div>Side</div><div>Entry</div><div>Exit</div><div>Qty</div><div>Lev</div><div>P&L</div><div>Type</div></div>`
+        + dmTradeHistory.map(t=>{
+          const col = t.pnl>=0?'var(--green)':'var(--red)';
+          const ts  = new Date(t.ts).toLocaleString('en-PK',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+          return `<div class="dtrade-row">
+            <div style="font-size:10px;color:var(--t3)">${ts}</div>
+            <div style="font-weight:500">${t.sym}</div>
+            <div><span class="pill" style="background:${t.side==='buy'?'rgba(16,185,129,.12)':'rgba(239,68,68,.12)'};color:${t.side==='buy'?'var(--green)':'var(--red)'}">${t.side==='buy'?'LONG':'SHORT'}</span></div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px">$${fmt(t.entry)}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px">$${fmt(t.exit)}</div>
+            <div style="font-size:10px;color:var(--t2)">${t.qty.toFixed(4)}</div>
+            <div style="color:var(--gold)">${t.lev}x</div>
+            <div class="${t.pnl>=0?'pnl-pos':'pnl-neg'}">${t.pnl>=0?'+':'-'}$${fmt(Math.abs(t.pnl))}</div>
+            <div style="font-size:10px;color:var(--t3)">${t.type}</div>
+          </div>`;
+        }).join('');
+    }
+  }
+
+  // Update AI suggest if demo tab is open
+  dmUpdateAISuggest();
+  dmCalcQty();
+}
 renderCoins();
 loadHistory();
 renderHistory();
+dmLoad();
+dmRender();
 runPipeline();
 
-// Auto-refresh every 60 seconds (prices every 10s separately)
+// Auto-refresh prices every 10s
 setInterval(async ()=>{
   await fetchPrices();
   computeSignals();
   renderOB();
   checkPendingSignals();
+  dmCheckAutoClose();
+  dmRender();
 }, 10000);
 
 setInterval(()=>{
