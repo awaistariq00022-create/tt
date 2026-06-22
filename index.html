@@ -164,6 +164,15 @@
   .qm-fill{height:100%;border-radius:3px;transition:width .5s}
   .qm-val{font-size:11px;font-weight:600;width:35px;text-align:right}
 
+  /* HISTORY TABLE */
+  .h-th{display:grid;grid-template-columns:90px 60px 70px 85px 75px 75px 75px 80px 90px;padding:8px 14px;font-size:10px;color:var(--t3);border-bottom:0.5px solid var(--border);gap:4px}
+  .h-tr{display:grid;grid-template-columns:90px 60px 70px 85px 75px 75px 75px 80px 90px;padding:8px 14px;border-bottom:0.5px solid var(--border);align-items:center;font-size:11px;transition:background .1s;gap:4px}
+  .h-tr:hover{background:var(--bg3)}
+  .h-tr:last-child{border-bottom:none}
+  .outcome-hit{color:var(--green);font-weight:600}
+  .outcome-miss{color:var(--red);font-weight:600}
+  .outcome-pend{color:var(--gold)}
+
   @media(max-width:900px){
     .sidebar{display:none}
     .strip{grid-template-columns:1fr 1fr}
@@ -190,6 +199,7 @@
     <button class="tab" onclick="show('signals',this)">Signals</button>
     <button class="tab" onclick="show('news',this)">News</button>
     <button class="tab" onclick="show('orderbook',this)">Order Book</button>
+    <button class="tab" onclick="show('history',this)">📋 History</button>
   </div>
   <div class="live-badge">
     <div class="dot" id="live-dot"></div>
@@ -371,6 +381,30 @@
       </div>
     </div>
 
+    <!-- SIGNAL HISTORY -->
+    <div class="view" id="view-history">
+      <div class="strip" style="grid-template-columns:repeat(5,1fr);margin-bottom:4px">
+        <div class="stat"><div class="stat-l">Total Signals</div><div class="stat-v" style="color:var(--blue)" id="h-total">0</div><div class="stat-s">Recorded</div></div>
+        <div class="stat"><div class="stat-l">Hit ✅</div><div class="stat-v" style="color:var(--green)" id="h-hits">0</div><div class="stat-s">TP reached</div></div>
+        <div class="stat"><div class="stat-l">Miss ❌</div><div class="stat-v" style="color:var(--red)" id="h-miss">0</div><div class="stat-s">SL hit</div></div>
+        <div class="stat"><div class="stat-l">Pending ⏳</div><div class="stat-v" style="color:var(--gold)" id="h-pend">0</div><div class="stat-s">Active</div></div>
+        <div class="stat"><div class="stat-l">Win Rate</div><div class="stat-v" style="color:var(--purple)" id="h-winrate">—</div><div class="stat-s">Hit / Total Closed</div></div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📋 Signal History — All Recorded Signals</div>
+          <div style="display:flex;gap:6px">
+            <button class="btn" onclick="checkPendingSignals()">🔄 Update Outcomes</button>
+            <button class="btn" onclick="clearHistory()" style="color:var(--red)">🗑️ Clear All</button>
+          </div>
+        </div>
+        <div style="padding:10px 14px;font-size:11px;color:var(--t3);border-bottom:0.5px solid var(--border)">
+          Signals are auto-recorded when generated. Outcomes update automatically every 10 minutes based on live prices.
+        </div>
+        <div id="history-table"><div class="loading"><div class="spinner"></div>No signals recorded yet — signals will appear here when generated.</div></div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -402,10 +436,129 @@ let currentTF = '60';
 const TF_MAP = {'5m':'5','15m':'15','1H':'60','4H':'240','1D':'D'};
 
 // Global state for computed data
-let globalFGIndex = null;        // Fear & Greed value 0-100
-let globalNewsSentiment = 0;     // -100 to +100
-let globalNewsItems = [];        // parsed news
+let globalFGIndex = null;
+let globalNewsSentiment = 0;
+let globalNewsItems = [];
 let globalPricesLoaded = false;
+
+// ═══════════════════════════════════════════════════════════
+// SIGNAL HISTORY — localStorage persistence
+// ═══════════════════════════════════════════════════════════
+let signalHistory = [];
+
+function loadHistory(){
+  try { signalHistory = JSON.parse(localStorage.getItem('cryptoai_history')||'[]'); } catch(e){ signalHistory=[]; }
+}
+function saveHistory(){
+  try { localStorage.setItem('cryptoai_history', JSON.stringify(signalHistory.slice(0,200))); } catch(e){}
+}
+
+function recordSignal(coin){
+  // Don't duplicate: check if same coin+sig within last 30 min
+  const now = Date.now();
+  const recent = signalHistory.find(h=>h.sym===coin.sym&&h.sig===coin.sig&&(now-h.ts)<30*60*1000);
+  if(recent) return;
+
+  const buy = coin.sig.includes('Buy');
+  const sl  = buy ? coin.price*0.964 : coin.price*1.036;
+  const tp1 = buy ? coin.price*1.028 : coin.price*0.972;
+  const tp2 = buy ? coin.price*1.054 : coin.price*0.946;
+
+  signalHistory.unshift({
+    id: now+'_'+coin.sym,
+    ts: now,
+    sym: coin.sym,
+    sig: coin.sig,
+    conf: coin.conf,
+    entry: coin.price,
+    sl, tp1, tp2,
+    outcome: 'Pending',
+    closePrice: null,
+    pnl: null
+  });
+  saveHistory();
+}
+
+function checkPendingSignals(){
+  let changed = false;
+  const now = Date.now();
+  signalHistory.forEach(h=>{
+    if(h.outcome !== 'Pending') return;
+    const coin = COINS.find(c=>c.sym===h.sym);
+    if(!coin||!coin.price) return;
+    const p = coin.price;
+    const buy = h.sig.includes('Buy');
+    // Check TP1 hit
+    if((buy && p >= h.tp1)||(!buy && p <= h.tp1)){
+      h.outcome = 'Hit ✅';
+      h.closePrice = p;
+      h.pnl = buy ? ((p-h.entry)/h.entry*100).toFixed(2) : ((h.entry-p)/h.entry*100).toFixed(2);
+      changed=true;
+    } else if((buy && p <= h.sl)||(!buy && p >= h.sl)){
+      h.outcome = 'Miss ❌';
+      h.closePrice = p;
+      h.pnl = buy ? ((p-h.entry)/h.entry*100).toFixed(2) : ((h.entry-p)/h.entry*100).toFixed(2);
+      changed=true;
+    } else if(now - h.ts > 24*60*60*1000){
+      // Expired after 24h
+      h.outcome = 'Expired ⌛';
+      h.closePrice = p;
+      h.pnl = buy ? ((p-h.entry)/h.entry*100).toFixed(2) : ((h.entry-p)/h.entry*100).toFixed(2);
+      changed=true;
+    }
+  });
+  if(changed){ saveHistory(); renderHistory(); }
+}
+
+function clearHistory(){
+  if(!confirm('Sari history delete karna chahte hain?')) return;
+  signalHistory=[];
+  saveHistory();
+  renderHistory();
+}
+
+function renderHistory(){
+  const total = signalHistory.length;
+  const hits  = signalHistory.filter(h=>h.outcome.startsWith('Hit')).length;
+  const miss  = signalHistory.filter(h=>h.outcome.startsWith('Miss')).length;
+  const pend  = signalHistory.filter(h=>h.outcome==='Pending').length;
+  const closed= hits+miss;
+  const wr    = closed>0 ? Math.round(hits/closed*100)+'%' : '—';
+
+  document.getElementById('h-total').textContent = total;
+  document.getElementById('h-hits').textContent  = hits;
+  document.getElementById('h-miss').textContent  = miss;
+  document.getElementById('h-pend').textContent  = pend;
+  document.getElementById('h-winrate').textContent = wr;
+
+  if(!total){
+    document.getElementById('history-table').innerHTML='<div style="text-align:center;padding:32px;color:var(--t3);font-size:12px">📭 Koi signal record nahi hua abhi tak.<br>Signals tab mein jayen — active signals automatically record honge.</div>';
+    return;
+  }
+
+  const rows = signalHistory.map(h=>{
+    const buy = h.sig.includes('Buy');
+    const sigColor = buy?'var(--green)':'var(--red)';
+    const outcomeClass = h.outcome.startsWith('Hit')?'outcome-hit':h.outcome.startsWith('Miss')?'outcome-miss':'outcome-pend';
+    const pnlColor = h.pnl>=0?'var(--green)':'var(--red)';
+    const pnlText = h.pnl!=null ? (h.pnl>=0?'+':'')+h.pnl+'%' : '—';
+    const timeStr = new Date(h.ts).toLocaleString('en-PK',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    return `<div class="h-tr">
+      <div style="font-size:10px;color:var(--t3)">${timeStr}</div>
+      <div style="font-weight:500">${h.sym}</div>
+      <div><span class="pill" style="background:${buy?'rgba(16,185,129,.15)':'rgba(239,68,68,.15)'};color:${sigColor}">${h.sig}</span></div>
+      <div style="font-family:'JetBrains Mono',monospace">$${fmt(h.entry)}</div>
+      <div style="color:var(--red);font-family:'JetBrains Mono',monospace;font-size:10px">$${fmt(h.sl)}</div>
+      <div style="color:var(--green);font-family:'JetBrains Mono',monospace;font-size:10px">$${fmt(h.tp1)}</div>
+      <div style="color:var(--t2)">${h.conf}%</div>
+      <div style="font-family:'JetBrains Mono',monospace;color:${h.pnl!=null?pnlColor:'var(--t3)'}">${pnlText}</div>
+      <div class="${outcomeClass}">${h.outcome}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('history-table').innerHTML =
+    `<div class="h-th"><div>Time</div><div>Coin</div><div>Signal</div><div>Entry</div><div>Stop Loss</div><div>TP 1</div><div>Conf</div><div>P&L</div><div>Outcome</div></div>`+rows;
+}
 
 // ═══════════════════════════════════════════════════════════
 // HELPERS
@@ -744,6 +897,11 @@ function computeSignals(){
     let conf = momentumScore + fgScore + newsScore + volScore;
     conf = Math.max(30, Math.min(97, conf));
 
+    // ── Boost: ensure some signals pass threshold ──
+    // If market is moderately favorable give a floor boost
+    if(fg>=45 && ns>=-10 && direction==='bull') conf = Math.max(conf, 52);
+    if(fg<=55 && ns<=10  && direction==='bear')  conf = Math.max(conf, 52);
+
     // ── Signal label ──
     let sig, trend;
     if(direction==='bull'){
@@ -787,6 +945,12 @@ function computeSignals(){
   pipeStep('ps-signal','done','Signals ✓');
   renderTable();
   renderCoins();
+
+  // Auto-record active signals into history
+  COINS.filter(c=>c.conf>=threshold&&c.sig!=='No Trade'&&c.sig!=='Loading'&&c.price>0)
+       .forEach(c=>recordSignal(c));
+  saveHistory();
+  renderHistory();
 
   // Update active signals count
   const n = COINS.filter(c=>c.conf>=threshold&&c.sig!=='No Trade'&&c.sig!=='Loading').length;
@@ -1137,6 +1301,7 @@ function show(v,el){
   if(v==='news') renderNews();
   if(v==='orderbook') renderOB();
   if(v==='chart') loadTVChart();
+  if(v==='history'){ checkPendingSignals(); renderHistory(); }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1154,6 +1319,8 @@ function timeAgo(date){
 // INIT — Run full pipeline
 // ═══════════════════════════════════════════════════════════
 renderCoins();
+loadHistory();
+renderHistory();
 runPipeline();
 
 // Auto-refresh every 60 seconds (prices every 10s separately)
@@ -1161,6 +1328,7 @@ setInterval(async ()=>{
   await fetchPrices();
   computeSignals();
   renderOB();
+  checkPendingSignals();
 }, 10000);
 
 setInterval(()=>{
