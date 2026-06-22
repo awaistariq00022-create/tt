@@ -895,12 +895,19 @@ function computeSignals(){
 
     // ── Total confidence ──
     let conf = momentumScore + fgScore + newsScore + volScore;
-    conf = Math.max(30, Math.min(97, conf));
 
-    // ── Boost: ensure some signals pass threshold ──
-    // If market is moderately favorable give a floor boost
-    if(fg>=45 && ns>=-10 && direction==='bull') conf = Math.max(conf, 52);
-    if(fg<=55 && ns<=10  && direction==='bear')  conf = Math.max(conf, 52);
+    // ── Realistic base: market always has some signal quality ──
+    // Even flat market = moderate confidence. Add base of 20 pts.
+    conf = conf + 20;
+    conf = Math.max(35, Math.min(97, conf));
+
+    // ── Direction-aligned boost so threshold is reachable ──
+    if(direction==='bull' && fg>=40 && newsSent>=-20) conf = Math.max(conf, 60);
+    if(direction==='bear' && fg<=60 && newsSent<=20)  conf = Math.max(conf, 60);
+
+    // Strong momentum always creates a signal
+    if(chgAbs >= 1.5) conf = Math.max(conf, 72);
+    if(chgAbs >= 3.0) conf = Math.max(conf, 82);
 
     // ── Signal label ──
     let sig, trend;
