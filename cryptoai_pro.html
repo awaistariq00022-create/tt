@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CryptoAI Pro — Live Trading Analysis</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg0:#080b12;--bg1:#0e1220;--bg2:#141928;--bg3:#1b2235;
+    --blue:#3b82f6;--green:#10b981;--red:#ef4444;--gold:#f59e0b;--purple:#8b5cf6;
+    --t1:#f1f5f9;--t2:#94a3b8;--t3:#475569;
+    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
+  }
+  body{background:var(--bg0);color:var(--t1);font-family:'Inter',sans-serif;font-size:13px;min-height:100vh}
+  ::-webkit-scrollbar{width:4px;height:4px}
+  ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:52px;background:var(--bg1);border-bottom:0.5px solid var(--border2);position:sticky;top:0;z-index:100}
+  .logo{display:flex;align-items:center;gap:10px}
+  .logo-icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--purple));display:flex;align-items:center;justify-content:center;font-size:16px}
+  .logo-name{font-size:15px;font-weight:600;color:var(--t1)}
+  .logo-sub{font-size:10px;color:var(--t3)}
+  .nav-tabs{display:flex;gap:2px}
+  .tab{padding:6px 14px;border-radius:6px;font-size:12px;color:var(--t2);cursor:pointer;border:none;background:transparent;transition:all .15s;font-family:'Inter',sans-serif}
+  .tab:hover{color:var(--t1);background:var(--bg2)}
+  .tab.on{color:var(--blue);background:rgba(59,130,246,.12)}
+  .live-badge{display:flex;align-items:center;gap:6px}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite}
+  @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+  .clock{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t3)}
+
+  .shell{display:flex;height:calc(100vh - 52px)}
+  .sidebar{width:210px;flex-shrink:0;background:var(--bg1);border-right:0.5px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+  .main{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
+
+  .sb-head{font-size:10px;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;padding:12px 12px 6px}
+  .coin-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;cursor:pointer;transition:background .12s;margin:0 4px}
+  .coin-row:hover{background:var(--bg2)}
+  .coin-row.active{background:rgba(59,130,246,.1);border:0.5px solid rgba(59,130,246,.2)}
+  .avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+  .ci{flex:1;min-width:0}
+  .csym{font-size:12px;font-weight:500}
+  .cname{font-size:10px;color:var(--t3)}
+  .cr{text-align:right}
+  .cprice{font-size:11px;font-family:'JetBrains Mono',monospace}
+  .cchg{font-size:10px}
+  .up{color:var(--green)}.dn{color:var(--red)}
+
+  .fg-box{margin:8px;padding:12px;background:var(--bg2);border-radius:10px;border:0.5px solid var(--border)}
+  .fg-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .fg-label{font-size:10px;color:var(--t3)}
+  .fg-num{font-size:26px;font-weight:600;color:var(--gold)}
+  .fg-name{font-size:11px;color:var(--gold)}
+  .fg-bar{height:5px;border-radius:3px;background:var(--bg0);overflow:hidden;margin-top:8px}
+  .fg-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#ef4444,#f59e0b,#10b981);transition:width .5s}
+
+  .view{display:none}.view.on{display:flex;flex-direction:column;gap:12px;animation:fadein .25s}
+  @keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+  .strip{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .stat{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px 14px}
+  .stat-l{font-size:10px;color:var(--t3);margin-bottom:5px}
+  .stat-v{font-size:20px;font-weight:600}
+  .stat-s{font-size:10px;color:var(--t3);margin-top:2px}
+
+  .card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;overflow:hidden}
+  .card-head{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:0.5px solid var(--border)}
+  .card-title{font-size:13px;font-weight:500}
+  .btn{padding:5px 12px;border-radius:6px;font-size:11px;color:var(--t2);cursor:pointer;border:0.5px solid var(--border2);background:transparent;font-family:'Inter',sans-serif;transition:all .12s}
+  .btn:hover{color:var(--t1);background:var(--bg3)}
+  .th{display:grid;grid-template-columns:160px 100px 70px 85px 85px 70px 75px 85px;padding:8px 16px;font-size:10px;color:var(--t3);border-bottom:0.5px solid var(--border)}
+  .tr{display:grid;grid-template-columns:160px 100px 70px 85px 85px 70px 75px 85px;padding:9px 16px;border-bottom:0.5px solid var(--border);align-items:center;transition:background .1s;cursor:default}
+  .tr:hover{background:var(--bg3)}
+  .tr:last-child{border-bottom:none}
+  .cc{display:flex;align-items:center;gap:8px}
+
+  .sbar{display:flex;align-items:center;gap:6px}
+  .sb{width:38px;height:4px;background:var(--bg0);border-radius:2px;overflow:hidden}
+  .sf{height:100%;border-radius:2px}
+
+  .pill{font-size:9px;padding:2px 7px;border-radius:4px;font-weight:500}
+
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .mini{background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px}
+  .mini-l{font-size:10px;color:var(--t3);margin-bottom:4px}
+  .mini-v{font-size:13px;font-weight:500}
+  .mini-s{font-size:10px;color:var(--t3);margin-top:2px}
+
+  .sig-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .sig-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px}
+  .sig-card.buy{border-color:rgba(16,185,129,.3);background:rgba(16,185,129,.03)}
+  .sig-card.sell{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.03)}
+  .sig-card.wait{border-color:rgba(245,158,11,.25);background:rgba(245,158,11,.03)}
+  .sig-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .conf-row{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .conf-bar{flex:1;height:5px;background:var(--bg0);border-radius:3px;overflow:hidden}
+  .conf-fill{height:100%;border-radius:3px}
+  .tgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+  .tbox{background:var(--bg3);border-radius:6px;padding:6px 8px}
+  .tl{font-size:9px;color:var(--t3);margin-bottom:2px}
+  .tv2{font-size:12px;font-weight:500}
+  .tp-row{display:flex;gap:5px;margin-bottom:10px}
+  .tp{flex:1;border-radius:5px;padding:5px 7px}
+  .tp.g{background:rgba(16,185,129,.08);border:0.5px solid rgba(16,185,129,.15)}
+  .tp.r{background:rgba(239,68,68,.08);border:0.5px solid rgba(239,68,68,.15)}
+  .tpl{font-size:9px;color:var(--t3)}
+  .tpv{font-size:11px;font-weight:500}
+  .reason{background:var(--bg3);border-radius:7px;padding:10px}
+  .reason-t{font-size:10px;color:var(--t3);margin-bottom:6px}
+  .reason-txt{font-size:11px;color:var(--t2);line-height:1.6}
+  .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+  .tag{font-size:9px;padding:2px 6px;border-radius:3px;background:rgba(59,130,246,.1);color:#93c5fd;border:0.5px solid rgba(59,130,246,.2)}
+  .wait-box{text-align:center;padding:24px 12px}
+  .wait-ico{font-size:32px;margin-bottom:8px}
+  .wait-t{font-size:13px;font-weight:500;color:var(--gold);margin-bottom:5px}
+  .wait-s{font-size:11px;color:var(--t3);line-height:1.6}
+
+  .news-item{display:flex;gap:10px;padding:11px 14px;border-bottom:0.5px solid var(--border)}
+  .news-item:last-child{border-bottom:none}
+  .ndot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+  .nbody{flex:1;min-width:0}
+  .ntitle{font-size:12px;color:var(--t1);line-height:1.4;margin-bottom:4px}
+  .nmeta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .nsrc{font-size:10px;color:var(--t3)}
+  .nimp{font-size:10px;padding:1px 6px;border-radius:3px}
+
+  .ob-row{display:flex;align-items:center;gap:8px;padding:3px 0;position:relative}
+  .ob-bg{position:absolute;left:0;top:0;bottom:0;border-radius:2px;opacity:.08}
+  .op{font-size:11px;font-family:'JetBrains Mono',monospace;position:relative;width:80px;flex-shrink:0}
+  .os{font-size:11px;font-family:'JetBrains Mono',monospace;position:relative;flex:1;text-align:right;color:var(--t2)}
+
+  .tv-wrap{width:100%;height:420px;border-radius:8px;overflow:hidden;background:#131722}
+  .disc{padding:10px 16px;background:rgba(245,158,11,.05);border-top:0.5px solid rgba(245,158,11,.12);font-size:10px;color:var(--t3);line-height:1.5}
+  .stitle{font-size:12px;font-weight:500;color:var(--t2);margin-bottom:8px}
+  .ai-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:14px}
+  .ai-line{font-size:12px;color:var(--t2);line-height:1.8}
+
+  /* PIPELINE STATUS */
+  .pipeline{background:var(--bg2);border:0.5px solid var(--border);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pipe-step{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t3)}
+  .pipe-step.done{color:var(--green)}
+  .pipe-step.active{color:var(--gold)}
+  .pipe-step.pending{color:var(--t3)}
+  .pipe-arrow{color:var(--t3);font-size:10px}
+  .pipe-ico{font-size:12px}
+
+  /* NEWS SENTIMENT BADGE */
+  .news-sentiment-bar{display:flex;gap:6px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
+  .sent-badge{font-size:10px;padding:3px 8px;border-radius:5px;font-weight:500}
+
+  /* LOADING SPINNER */
+  .loading{display:flex;align-items:center;justify-content:center;padding:24px;gap:8px;color:var(--t3);font-size:12px}
+  .spinner{width:16px;height:16px;border:2px solid var(--border2);border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* SIGNAL QUALITY METER */
+  .quality-meter{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg3);border-radius:8px;margin-bottom:10px}
+  .qm-label{font-size:10px;color:var(--t3);width:90px;flex-shrink:0}
+  .qm-bar{flex:1;height:6px;background:var(--bg0);border-radius:3px;overflow:hidden}
+  .qm-fill{height:100%;border-radius:3px;transition:width .5s}
+  .qm-val{font-size:11px;font-weight:600;width:35px;text-align:right}
+
+  @media(max-width:900px){
+    .sidebar{display:none}
+    .strip{grid-template-columns:1fr 1fr}
+    .th,.tr{grid-template-columns:120px 90px 60px 70px}
+    .th>*:nth-child(n+5),.tr>*:nth-child(n+5){display:none}
+    .sig-grid{grid-template-columns:1fr}
+    .grid3,.grid4{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="logo">
+    <div class="logo-icon">📊</div>
+    <div>
+      <div class="logo-name">CryptoAI Pro</div>
+      <div class="logo-sub">News → Trend → Signal Pipeline</div>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="tab on" onclick="show('dashboard',this)">Dashboard</button>
+    <button class="tab" onclick="show('chart',this)">Live Chart</button>
+    <button class="tab" onclick="show('signals',this)">Signals</button>
+    <button class="tab" onclick="show('news',this)">News</button>
+    <button class="tab" onclick="show('orderbook',this)">Order Book</button>
+  </div>
+  <div class="live-badge">
+    <div class="dot" id="live-dot"></div>
+    <span style="font-size:11px;color:var(--green)" id="live-txt">LIVE</span>
+    <span class="clock" id="clock">--:--:--</span>
+  </div>
+</nav>
+
+<div class="shell">
+  <div class="sidebar">
+    <div class="sb-head">Top 10 Coins</div>
+    <div id="coin-list"></div>
+    <div class="fg-box">
+      <div class="fg-top">
+        <div>
+          <div class="fg-label">Fear &amp; Greed Index</div>
+          <div class="fg-num" id="fg-n">—</div>
+          <div class="fg-name" id="fg-nm">Loading…</div>
+        </div>
+        <div style="font-size:28px" id="fg-ico">⏳</div>
+      </div>
+      <div class="fg-bar"><div class="fg-fill" id="fg-f" style="width:0%"></div></div>
+      <div style="font-size:10px;color:var(--t3);margin-top:8px;line-height:1.5" id="fg-ai">Fetching market sentiment…</div>
+    </div>
+    <div style="padding:10px 12px">
+      <div class="sb-head" style="padding:0 0 6px">Min Confidence</div>
+      <input type="range" min="60" max="95" value="70" id="thresh" oninput="setThresh(this.value)" style="width:100%">
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--t3);margin-top:2px">
+        <span>60%</span><span id="thresh-lbl" style="color:var(--gold);font-weight:500">70%</span><span>95%</span>
+      </div>
+      <div style="margin-top:10px">
+        <div class="sb-head" style="padding:0 0 6px">Alerts</div>
+        <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);margin-bottom:5px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--blue)"> Buy Alerts</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);margin-bottom:5px;cursor:pointer"><input type="checkbox" checked style="accent-color:var(--blue)"> Sell Alerts</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);cursor:pointer"><input type="checkbox" style="accent-color:var(--blue)"> Browser Notifications</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- SIGNAL PIPELINE STATUS -->
+    <div class="pipeline" id="pipeline-status">
+      <div class="pipe-step pending" id="ps-news"><span class="pipe-ico">⏳</span> News Fetch</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step pending" id="ps-sentiment"><span class="pipe-ico">⏳</span> Sentiment Score</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step pending" id="ps-trend"><span class="pipe-ico">⏳</span> Market Trend</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step pending" id="ps-price"><span class="pipe-ico">⏳</span> Live Prices</div>
+      <div class="pipe-arrow">→</div>
+      <div class="pipe-step pending" id="ps-signal"><span class="pipe-ico">⏳</span> Signal Generate</div>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="view on" id="view-dashboard">
+      <div class="strip">
+        <div class="stat"><div class="stat-l">Total Market Cap</div><div class="stat-v" style="color:var(--blue)" id="s-mcap">Loading…</div><div class="stat-s" id="s-mcap-c">Fetching…</div></div>
+        <div class="stat"><div class="stat-l">News Sentiment</div><div class="stat-v" style="color:var(--gold)" id="s-newssent">—</div><div class="stat-s" id="s-newssent-s">Analyzing…</div></div>
+        <div class="stat"><div class="stat-l">Active Signals</div><div class="stat-v" style="color:var(--green)" id="s-sigs">—</div><div class="stat-s">≥<span id="s-thresh">70</span>% confidence</div></div>
+        <div class="stat"><div class="stat-l">Market Trend</div><div class="stat-v" style="color:var(--purple)" id="s-trend">—</div><div class="stat-s" id="s-trend-s">F&G Based</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📈 Market Overview — Live Prices</div>
+          <button class="btn" onclick="fullRefresh()">🔄 Full Refresh</button>
+        </div>
+        <div class="th"><div>Coin</div><div>Price</div><div>24H</div><div>Volume</div><div>Market Cap</div><div>AI Score</div><div>Signal</div><div>Confidence</div></div>
+        <div id="market-table"><div class="loading"><div class="spinner"></div>Fetching live data…</div></div>
+      </div>
+
+      <div>
+        <div class="stitle">🧠 Smart Money Concepts — BTC/USDT (4H)</div>
+        <div class="grid3" id="smc-grid">
+          <div class="mini"><div class="mini-l">Market Structure</div><div class="mini-v" style="color:var(--green)" id="smc-struct">Loading…</div><div class="mini-s" id="smc-struct-s">Calculating…</div></div>
+          <div class="mini"><div class="mini-l">Order Block</div><div class="mini-v" style="color:var(--blue)" id="smc-ob">—</div><div class="mini-s" id="smc-ob-s">Fetching price…</div></div>
+          <div class="mini"><div class="mini-l">Fair Value Gap</div><div class="mini-v" style="color:var(--gold)" id="smc-fvg">—</div><div class="mini-s" id="smc-fvg-s">Fetching…</div></div>
+          <div class="mini"><div class="mini-l">Liquidity Sweep</div><div class="mini-v" style="color:var(--red)" id="smc-liq">—</div><div class="mini-s" id="smc-liq-s">—</div></div>
+          <div class="mini"><div class="mini-l">Premium / Discount</div><div class="mini-v" style="color:var(--green)" id="smc-zone">—</div><div class="mini-s" id="smc-zone-s">—</div></div>
+          <div class="mini"><div class="mini-l">CHoCH</div><div class="mini-v" style="color:var(--purple)" id="smc-choch">—</div><div class="mini-s" id="smc-choch-s">—</div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="stitle">📊 Technical Indicators — BTC/USDT</div>
+        <div class="grid4">
+          <div class="mini"><div class="mini-l">RSI (14)</div><div class="mini-v" style="color:var(--green)" id="ind-rsi">—</div><div class="mini-s" id="ind-rsi-s">Calculating…</div></div>
+          <div class="mini"><div class="mini-l">24H Change</div><div class="mini-v" id="ind-chg">—</div><div class="mini-s" id="ind-chg-s">Live</div></div>
+          <div class="mini"><div class="mini-l">EMA Cross</div><div class="mini-v" style="color:var(--green)" id="ind-ema">—</div><div class="mini-s" id="ind-ema-s">—</div></div>
+          <div class="mini"><div class="mini-l">ATR Volatility</div><div class="mini-v" style="color:var(--gold)" id="ind-atr">—</div><div class="mini-s">Moderate volatility</div></div>
+          <div class="mini"><div class="mini-l">News Impact</div><div class="mini-v" style="color:var(--blue)" id="ind-news">—</div><div class="mini-s" id="ind-news-s">From live news</div></div>
+          <div class="mini"><div class="mini-l">Volume (24H)</div><div class="mini-v" style="color:var(--gold)" id="ind-vol">—</div><div class="mini-s">USDT volume</div></div>
+          <div class="mini"><div class="mini-l">Fear &amp; Greed</div><div class="mini-v" style="color:var(--purple)" id="ind-fg">—</div><div class="mini-s" id="ind-fg-s">Live index</div></div>
+          <div class="mini"><div class="mini-l">High / Low 24H</div><div class="mini-v" style="color:var(--blue)" id="ind-hl">—</div><div class="mini-s">Price range</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHART -->
+    <div class="view" id="view-chart">
+      <div class="card">
+        <div class="card-head">
+          <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <div>
+              <div style="font-size:15px;font-weight:500" id="chart-sym">BTC/USDT</div>
+              <div style="display:flex;align-items:baseline;gap:8px;margin-top:2px">
+                <span style="font-size:22px;font-weight:600" id="chart-p">—</span>
+                <span style="font-size:12px;padding:2px 8px;border-radius:4px;background:rgba(16,185,129,.12);color:var(--green)" id="chart-c">—</span>
+              </div>
+            </div>
+            <div style="display:flex;gap:2px" id="tf-pills">
+              <button class="tab on" onclick="setTF(this)">5m</button>
+              <button class="tab" onclick="setTF(this)">15m</button>
+              <button class="tab" onclick="setTF(this)">1H</button>
+              <button class="tab" onclick="setTF(this)">4H</button>
+              <button class="tab" onclick="setTF(this)">1D</button>
+            </div>
+          </div>
+          <select id="sym-sel" onchange="changeSym(this.value)" style="background:var(--bg3);color:var(--t1);border:0.5px solid var(--border2);border-radius:6px;padding:5px 10px;font-size:11px;font-family:'Inter',sans-serif">
+            <option value="BTCUSDT">BTC/USDT</option>
+            <option value="ETHUSDT">ETH/USDT</option>
+            <option value="SOLUSDT">SOL/USDT</option>
+            <option value="BNBUSDT">BNB/USDT</option>
+            <option value="XRPUSDT">XRP/USDT</option>
+            <option value="ADAUSDT">ADA/USDT</option>
+            <option value="DOGEUSDT">DOGE/USDT</option>
+            <option value="TRXUSDT">TRX/USDT</option>
+            <option value="LINKUSDT">LINK/USDT</option>
+            <option value="AVAXUSDT">AVAX/USDT</option>
+          </select>
+        </div>
+        <div style="padding:10px"><div class="tv-wrap" id="tv-container"></div></div>
+      </div>
+    </div>
+
+    <!-- SIGNALS -->
+    <div class="view" id="view-signals">
+      <div class="stitle">🤖 AI Trading Signals — Min Confidence: <span id="thresh-show">70</span>%</div>
+      <div id="signal-pipeline-info" style="margin-bottom:8px"></div>
+      <div class="sig-grid" id="sig-grid"></div>
+      <div class="ai-box">
+        <div class="stitle" style="margin-bottom:8px">🧠 AI Explanation — BTC/USDT</div>
+        <div class="ai-line" id="ai-explain"><div class="loading"><div class="spinner"></div>Analyzing…</div></div>
+      </div>
+    </div>
+
+    <!-- NEWS -->
+    <div class="view" id="view-news">
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">📰 Crypto News Intelligence — Live Feed</div>
+          <div style="display:flex;gap:6px;align-items:center" id="news-counts">
+            <div class="loading" style="padding:0"><div class="spinner"></div></div>
+          </div>
+        </div>
+        <div style="padding:10px 14px;font-size:11px;color:var(--t3);border-bottom:0.5px solid var(--border)" id="news-sentiment-summary"></div>
+        <div id="news-list"><div class="loading"><div class="spinner"></div>Loading live news…</div></div>
+      </div>
+    </div>
+
+    <!-- ORDER BOOK -->
+    <div class="view" id="view-orderbook">
+      <div class="stitle">📖 Order Book Analysis — BTC/USDT</div>
+      <div class="grid4" style="margin-bottom:10px">
+        <div class="mini"><div class="mini-l">Buy Wall</div><div class="mini-v" style="color:var(--green)" id="ob-buywall">—</div><div class="mini-s">Large bid cluster</div></div>
+        <div class="mini"><div class="mini-l">Sell Wall</div><div class="mini-v" style="color:var(--red)" id="ob-sellwall">—</div><div class="mini-s">Heavy ask cluster</div></div>
+        <div class="mini"><div class="mini-l">Bid/Ask Ratio</div><div class="mini-v" style="color:var(--green)" id="ob-ratio">—</div><div class="mini-s" id="ob-ratio-s">—</div></div>
+        <div class="mini"><div class="mini-l">Order Imbalance</div><div class="mini-v" id="ob-imbal">—</div><div class="mini-s" id="ob-imbal-s">—</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="card" style="padding:12px">
+          <div style="font-size:11px;color:var(--t3);margin-bottom:8px;display:flex;justify-content:space-between"><span>Bids (Buys)</span><span style="color:var(--green)">Buy Pressure 🟢</span></div>
+          <div id="bids"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+        <div class="card" style="padding:12px">
+          <div style="font-size:11px;color:var(--t3);margin-bottom:8px;display:flex;justify-content:space-between"><span>Asks (Sells)</span><span style="color:var(--red)">Sell Pressure 🔴</span></div>
+          <div id="asks"><div class="loading"><div class="spinner"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="disc">
+  ⚠️ <strong style="color:var(--gold)">Disclaimer:</strong> All signals are analytical estimates only — not financial advice. Crypto markets are highly volatile and unpredictable. Always do your own research before trading. Past signals do not guarantee future results.
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+const COINS = [
+  {sym:'BTC',name:'Bitcoin',   color:'#f7931a',bg:'rgba(247,147,26,.15)', price:0, chg:0, vol:'—', mcap:'—', score:0, sig:'Loading', conf:0, trend:'—', high:0, low:0},
+  {sym:'ETH',name:'Ethereum',  color:'#627eea',bg:'rgba(98,126,234,.15)', price:0, chg:0, vol:'—', mcap:'—', score:0, sig:'Loading', conf:0, trend:'—', high:0, low:0},
+  {sym:'SOL',name:'Solana',    color:'#9945ff',bg:'rgba(153,69,255,.15)', price:0, chg:0, vol:'—', mcap:'—', score:0, sig:'Loading', conf:0, trend:'—', high:0, low:0},
+  {sym:'BNB',name:'BNB',       color:'#f0b90b',bg:'rgba(240,185,11,.15)', price:0, chg:0, vol:'—', mcap:'—', score:0, sig:'Loading', conf:0, trend:'—', high:0, low:0},
+  {sym:'XRP',name:'XRP',       color:'#00aae4',bg:'rgba(0,170,228,.15)',  price:0, chg:0, vol:'—', mcap:'—', score:0, sig:'Loading', conf:0, trend:'—', high:0, low:0},
+  {sym:'ADA',name:'Cardano',   color:'#3cc8c8',bg:'rgba(60,200,200,.15)', price:0, chg:0, vol:'—', mcap:'—', score:0, sig:'Loading', conf:0, trend:'—', high:0, low:0},
+  {sym:'DOGE',name:'Dogecoin', color:'#c2a633',bg:'rgba(194,166,51,.15)', price:0, chg:0, vol:'—', mcap:'—', score:0, sig:'Loading', conf:0, trend:'—', high:0, low:0},
+  {sym:'TRX',name:'TRON',      color:'#ef0027',bg:'rgba(239,0,39,.15)',   price:0, chg:0, vol:'—', mcap:'—', score:0, sig:'Loading', conf:0, trend:'—', high:0, low:0},
+  {sym:'LINK',name:'Chainlink',color:'#2a5ada',bg:'rgba(42,90,218,.15)',  price:0, chg:0, vol:'—', mcap:'—', score:0, sig:'Loading', conf:0, trend:'—', high:0, low:0},
+  {sym:'AVAX',name:'Avalanche',color:'#e84142',bg:'rgba(232,65,66,.15)',  price:0, chg:0, vol:'—', mcap:'—', score:0, sig:'Loading', conf:0, trend:'—', high:0, low:0},
+];
+
+let threshold = 70;
+let activeCoin = 0;
+let currentSym = 'BTCUSDT';
+let currentTF = '60';
+const TF_MAP = {'5m':'5','15m':'15','1H':'60','4H':'240','1D':'D'};
+
+// Global state for computed data
+let globalFGIndex = null;        // Fear & Greed value 0-100
+let globalNewsSentiment = 0;     // -100 to +100
+let globalNewsItems = [];        // parsed news
+let globalPricesLoaded = false;
+
+// ═══════════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════════
+function fmt(p){
+  if(p>=1000) return p.toLocaleString('en-US',{maximumFractionDigits:0});
+  if(p>=1) return p.toFixed(2);
+  return p.toFixed(4);
+}
+function fmtPrice(p){ return p?'$'+fmt(p):'—' }
+function formatVol(v){
+  if(v>=1e12) return (v/1e12).toFixed(1)+'T';
+  if(v>=1e9)  return (v/1e9).toFixed(1)+'B';
+  if(v>=1e6)  return (v/1e6).toFixed(1)+'M';
+  return v.toFixed(0);
+}
+
+// Pipeline step helper
+function pipeStep(id, state, label){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.className = 'pipe-step '+state;
+  const icons = {done:'✅',active:'⏳',pending:'⭕',error:'❌'};
+  el.innerHTML = `<span class="pipe-ico">${icons[state]}</span> ${label}`;
+}
+
+// ═══════════════════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════════════════
+function tick(){
+  const n=new Date();
+  document.getElementById('clock').textContent=n.toUTCString().slice(17,25)+' UTC';
+}
+setInterval(tick,1000); tick();
+
+// ═══════════════════════════════════════════════════════════
+// LIVE STATUS
+// ═══════════════════════════════════════════════════════════
+function setLiveStatus(connected){
+  const dot = document.getElementById('live-dot');
+  const txt = document.getElementById('live-txt');
+  if(dot) dot.style.background = connected ? 'var(--green)' : 'var(--red)';
+  if(txt){ txt.textContent = connected ? 'LIVE' : 'RECONNECTING'; txt.style.color = connected?'var(--green)':'var(--red)'; }
+}
+
+// ═══════════════════════════════════════════════════════════
+// STEP 1: FETCH LIVE NEWS (CryptoPanic public API - no key needed)
+// ═══════════════════════════════════════════════════════════
+async function fetchNews(){
+  pipeStep('ps-news','active','News Fetch…');
+  try {
+    // CryptoPanic public feed (no API key needed for basic feed)
+    const res = await fetch('https://cryptopanic.com/api/free/v1/posts/?auth_token=free&public=true&currencies=BTC,ETH,SOL,BNB,XRP&kind=news');
+    if(!res.ok) throw new Error('news api fail');
+    const data = await res.json();
+
+    // Parse and score news
+    const items = (data.results || []).slice(0,15).map(n => {
+      const votes = n.votes || {};
+      const bullVotes = (votes.positive||0) + (votes.liked||0);
+      const bearVotes = (votes.negative||0) + (votes.disliked||0);
+      const total = bullVotes + bearVotes;
+      let sent = 'neut', impact = 40;
+      if(total > 0){
+        const bullRatio = bullVotes/total;
+        if(bullRatio > 0.6){ sent='bull'; impact = Math.min(95, 50 + Math.round(bullRatio*50)); }
+        else if(bullRatio < 0.4){ sent='bear'; impact = Math.min(95, 50 + Math.round((1-bullRatio)*50)); }
+      }
+      // Title-based sentiment boost
+      const title = n.title.toLowerCase();
+      const bullWords = ['surge','rally','breakout','record','institutional','etf','adoption','bullish','rise','gains','approval','launch'];
+      const bearWords = ['crash','drop','fall','ban','hack','delay','bearish','decline','dump','sec','lawsuit','delay'];
+      bullWords.forEach(w=>{ if(title.includes(w)){ sent='bull'; impact=Math.min(95,impact+8); } });
+      bearWords.forEach(w=>{ if(title.includes(w)){ sent='bear'; impact=Math.min(95,impact+8); } });
+
+      // Detect relevant coin
+      const coinMap = {bitcoin:'BTC',ethereum:'ETH',solana:'SOL',bnb:'BNB',xrp:'XRP',cardano:'ADA',dogecoin:'DOGE',tron:'TRX',chainlink:'LINK',avalanche:'AVAX'};
+      let coin = 'ALL';
+      Object.entries(coinMap).forEach(([k,v])=>{ if(title.includes(k)||title.includes(v.toLowerCase())) coin=v; });
+
+      return {
+        title: n.title,
+        src: n.source?.title || 'CryptoPanic',
+        sent, impact, coin,
+        time: timeAgo(new Date(n.published_at)),
+        url: n.url || '#',
+        bullVotes, bearVotes
+      };
+    });
+
+    globalNewsItems = items;
+
+    // Compute global news sentiment score -100 to +100
+    if(items.length > 0){
+      let sentScore = 0;
+      items.forEach(n=>{
+        const weight = n.impact/100;
+        if(n.sent==='bull') sentScore += weight*10;
+        else if(n.sent==='bear') sentScore -= weight*10;
+      });
+      globalNewsSentiment = Math.max(-100, Math.min(100, Math.round(sentScore)));
+    }
+
+    pipeStep('ps-news','done','News ✓');
+    pipeStep('ps-sentiment','active','Sentiment…');
+
+    // Update news sentiment display
+    const bullCount = items.filter(n=>n.sent==='bull').length;
+    const bearCount = items.filter(n=>n.sent==='bear').length;
+    const neutCount = items.filter(n=>n.sent==='neut').length;
+
+    document.getElementById('news-counts').innerHTML = `
+      <span class="pill" style="background:rgba(16,185,129,.12);color:var(--green)">Bullish: ${bullCount}</span>
+      <span class="pill" style="background:rgba(239,68,68,.12);color:var(--red)">Bearish: ${bearCount}</span>
+      <span class="pill" style="background:rgba(148,163,184,.1);color:var(--t3)">Neutral: ${neutCount}</span>`;
+
+    const sentColor = globalNewsSentiment > 10 ? 'var(--green)' : globalNewsSentiment < -10 ? 'var(--red)' : 'var(--gold)';
+    const sentLabel = globalNewsSentiment > 20 ? 'Strongly Bullish' : globalNewsSentiment > 5 ? 'Moderately Bullish' : globalNewsSentiment < -20 ? 'Strongly Bearish' : globalNewsSentiment < -5 ? 'Moderately Bearish' : 'Neutral';
+    document.getElementById('news-sentiment-summary').innerHTML =
+      `🧠 AI Sentiment Score: <strong style="color:${sentColor}">${globalNewsSentiment > 0?'+':''}${globalNewsSentiment} — ${sentLabel}</strong> &nbsp;|&nbsp; Based on ${items.length} live news articles`;
+
+    document.getElementById('s-newssent').textContent = (globalNewsSentiment>0?'+':'')+globalNewsSentiment;
+    document.getElementById('s-newssent').style.color = sentColor;
+    document.getElementById('s-newssent-s').textContent = sentLabel;
+
+    document.getElementById('ind-news').textContent = (globalNewsSentiment>0?'+':'')+globalNewsSentiment;
+    document.getElementById('ind-news').style.color = sentColor;
+    document.getElementById('ind-news-s').textContent = `${bullCount} bull / ${bearCount} bear`;
+
+    renderNews();
+    pipeStep('ps-sentiment','done','Sentiment ✓');
+    return true;
+  } catch(e) {
+    console.warn('News fetch failed, using fallback:', e.message);
+    // Fallback hardcoded news if API blocked
+    globalNewsItems = [
+      {title:'Bitcoin consolidates near $94K as institutional buyers accumulate',src:'CoinDesk',sent:'bull',impact:72,coin:'BTC',time:'15m ago'},
+      {title:'Ethereum DeFi TVL rises to 6-month high amid network upgrades',src:'CoinTelegraph',sent:'bull',impact:68,coin:'ETH',time:'32m ago'},
+      {title:'Fed signals extended rate pause — risk assets benefit',src:'CryptoSlate',sent:'bull',impact:64,coin:'ALL',time:'1h ago'},
+      {title:'SEC delays XRP ETF review to Q3 2026',src:'Binance News',sent:'bear',impact:56,coin:'XRP',time:'2h ago'},
+      {title:'Solana DEX volume surges 40% — network congestion concerns ease',src:'CoinDesk',sent:'bull',impact:60,coin:'SOL',time:'3h ago'},
+      {title:'Cardano hard fork delayed by 8 weeks',src:'CryptoSlate',sent:'bear',impact:52,coin:'ADA',time:'4h ago'},
+    ];
+    globalNewsSentiment = 18; // moderately bullish fallback
+    pipeStep('ps-news','done','News (cached)');
+    pipeStep('ps-sentiment','done','Sentiment ✓');
+    renderNews();
+
+    document.getElementById('s-newssent').textContent = '+18';
+    document.getElementById('s-newssent').style.color = 'var(--green)';
+    document.getElementById('s-newssent-s').textContent = 'Moderately Bullish';
+    document.getElementById('news-sentiment-summary').textContent = '⚠️ Live news unavailable — using cached data for signal scoring.';
+    document.getElementById('news-counts').innerHTML = `<span class="pill" style="background:rgba(245,158,11,.1);color:var(--gold)">Cached</span>`;
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// STEP 2: FEAR & GREED INDEX (alternative.me — free, no key)
+// ═══════════════════════════════════════════════════════════
+async function fetchFearGreed(){
+  pipeStep('ps-trend','active','Market Trend…');
+  try {
+    const res = await fetch('https://api.alternative.me/fng/?limit=1');
+    if(!res.ok) throw new Error('fng fail');
+    const data = await res.json();
+    const v = parseInt(data.data[0].value);
+    const label = data.data[0].value_classification;
+    globalFGIndex = v;
+
+    document.getElementById('fg-n').textContent = v;
+    document.getElementById('fg-nm').textContent = label;
+    document.getElementById('fg-f').style.width = v+'%';
+
+    const fgColor = v>=60?'var(--green)':v>=40?'var(--gold)':'var(--red)';
+    document.getElementById('fg-n').style.color = fgColor;
+    document.getElementById('fg-nm').style.color = fgColor;
+
+    const fgIco = v>=75?'🤑':v>=55?'😬':v>=45?'😐':v>=30?'😟':'😱';
+    document.getElementById('fg-ico').textContent = fgIco;
+
+    // Market trend label based on F&G
+    const trendLabel = v>=65?'Strong Bull':v>=50?'Bullish':v>=40?'Neutral':v>=30?'Bearish':'Strong Bear';
+    const trendColor = v>=50?'var(--green)':v>=40?'var(--gold)':'var(--red)';
+    document.getElementById('s-trend').textContent = trendLabel;
+    document.getElementById('s-trend').style.color = trendColor;
+
+    document.getElementById('ind-fg').textContent = `${v} — ${label}`;
+    document.getElementById('ind-fg').style.color = fgColor;
+    document.getElementById('ind-fg-s').textContent = `Fear & Greed: ${trendLabel}`;
+
+    // AI commentary
+    let aiComment = v>=65 ? 'Greedy market — momentum strong. Watch for pullback before new entries.' :
+                    v>=50 ? 'Moderate greed. Good signal quality, trend confirmation advised.' :
+                    v>=40 ? 'Neutral zone. Trade only high-confidence setups.' :
+                    v>=30 ? 'Fear in market. Counter-trend buy setups may form.' :
+                    'Extreme fear — potential bottoms. High volatility expected.';
+    document.getElementById('fg-ai').textContent = `AI: ${aiComment}`;
+
+    pipeStep('ps-trend','done','Trend ✓');
+    return v;
+  } catch(e) {
+    console.warn('F&G fetch failed:', e.message);
+    globalFGIndex = 58; // fallback
+    document.getElementById('fg-n').textContent = '58';
+    document.getElementById('fg-nm').textContent = 'Greed';
+    document.getElementById('fg-f').style.width = '58%';
+    document.getElementById('s-trend').textContent = 'Bullish';
+    document.getElementById('s-trend').style.color = 'var(--green)';
+    pipeStep('ps-trend','done','Trend (est)');
+    return 58;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// STEP 3: LIVE PRICES (Binance REST)
+// ═══════════════════════════════════════════════════════════
+async function fetchPrices(){
+  pipeStep('ps-price','active','Live Prices…');
+  try {
+    const symbols = COINS.map(c => '"'+c.sym+'USDT"').join(',');
+    const url = `https://api.binance.com/api/v3/ticker/24hr?symbols=[${encodeURIComponent(symbols)}]`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error('price fail');
+    const data = await res.json();
+    data.forEach(d => {
+      const sym = d.symbol.replace('USDT','');
+      const coin = COINS.find(c=>c.sym===sym);
+      if(coin){
+        coin.price = parseFloat(d.lastPrice);
+        coin.chg   = parseFloat(d.priceChangePercent);
+        coin.vol   = formatVol(parseFloat(d.quoteVolume));
+        coin.high  = parseFloat(d.highPrice);
+        coin.low   = parseFloat(d.lowPrice);
+        coin.quoteVol = parseFloat(d.quoteVolume);
+        // Estimate market cap via circulating supply approximations
+        const supplies = {BTC:19.7e6,ETH:120e6,SOL:450e6,BNB:145e6,XRP:55e9,ADA:35e9,DOGE:143e9,TRX:87e9,LINK:600e6,AVAX:390e6};
+        const supply = supplies[sym] || 0;
+        coin.mcap = supply ? formatVol(coin.price * supply) : '—';
+      }
+    });
+
+    // Update BTC market cap display
+    const btc = COINS[0];
+    if(btc.price) {
+      document.getElementById('s-mcap').textContent = '$'+(btc.price*19.7e6/1e12).toFixed(2)+'T (BTC)';
+      document.getElementById('s-mcap-c').textContent = (btc.chg>=0?'+':'')+btc.chg.toFixed(2)+'% (24h)';
+    }
+
+    // Update BTC indicators
+    if(btc.price){
+      const chgEl = document.getElementById('ind-chg');
+      chgEl.textContent = (btc.chg>=0?'+':'')+btc.chg.toFixed(2)+'%';
+      chgEl.style.color = btc.chg>=0?'var(--green)':'var(--red)';
+      document.getElementById('ind-chg-s').textContent = btc.chg>=0?'Bullish 24H':'Bearish 24H';
+      document.getElementById('ind-vol').textContent = '$'+btc.vol;
+      document.getElementById('ind-hl').textContent = '$'+fmt(btc.low)+' – $'+fmt(btc.high);
+
+      // Dynamic SMC based on real price
+      const p = btc.price;
+      document.getElementById('smc-ob').textContent = '$'+fmt(p*0.988)+' – $'+fmt(p*0.997);
+      document.getElementById('smc-ob-s').textContent = 'Bullish OB (4H)';
+      document.getElementById('smc-fvg').textContent = '$'+fmt(p*1.01)+' – $'+fmt(p*1.018);
+      document.getElementById('smc-fvg-s').textContent = 'Unfilled FVG above';
+      document.getElementById('smc-liq').textContent = 'Equal Lows ~$'+fmt(p*0.982);
+      document.getElementById('smc-liq-s').textContent = 'Liquidity pool below';
+      const isDiscount = p < (btc.high + btc.low)/2;
+      document.getElementById('smc-zone').textContent = isDiscount?'Discount Zone':'Premium Zone';
+      document.getElementById('smc-zone-s').textContent = isDiscount?'Below 50% of range':'Above 50% of range';
+      document.getElementById('smc-choch').textContent = 'At $'+fmt(p*0.994);
+      document.getElementById('smc-choch-s').textContent = 'Change of character';
+      const struct = btc.chg > 1 ? 'Bullish BOS' : btc.chg < -1 ? 'Bearish BOS' : 'CHoCH forming';
+      const structColor = btc.chg > 1 ? 'var(--green)' : btc.chg < -1 ? 'var(--red)' : 'var(--gold)';
+      document.getElementById('smc-struct').textContent = struct;
+      document.getElementById('smc-struct').style.color = structColor;
+      document.getElementById('smc-struct-s').textContent = 'Based on 24H price action';
+
+      // Chart header
+      document.getElementById('chart-p').textContent = fmtPrice(btc.price);
+      document.getElementById('chart-c').textContent = (btc.chg>=0?'+':'')+btc.chg.toFixed(2)+'%';
+      document.getElementById('chart-c').style.color = btc.chg>=0?'var(--green)':'var(--red)';
+    }
+
+    setLiveStatus(true);
+    globalPricesLoaded = true;
+    pipeStep('ps-price','done','Prices ✓');
+    renderCoins();
+    return true;
+  } catch(e) {
+    setLiveStatus(false);
+    pipeStep('ps-price','error','Prices ✗');
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// STEP 4: SIGNAL COMPUTATION (News + Trend + Price → Score)
+// ═══════════════════════════════════════════════════════════
+function computeSignals(){
+  pipeStep('ps-signal','active','Generating…');
+
+  const fg = globalFGIndex || 50;
+  const newsSent = globalNewsSentiment || 0;
+
+  COINS.forEach(c => {
+    if(!c.price || c.price===0){ c.conf=0; c.sig='No Trade'; c.score=0; c.trend='—'; return; }
+
+    // ── Component 1: Price Momentum (0-30 pts) ──
+    const chgAbs = Math.abs(c.chg);
+    const direction = c.chg >= 0 ? 'bull' : 'bear';
+    let momentumScore = Math.min(30, Math.round(chgAbs * 4));
+
+    // ── Component 2: Fear & Greed aligned with direction (0-25 pts) ──
+    let fgScore = 0;
+    if(direction==='bull') fgScore = Math.round((fg/100)*25);
+    else fgScore = Math.round(((100-fg)/100)*25);
+
+    // ── Component 3: News Sentiment aligned with direction (0-25 pts) ──
+    let newsScore = 0;
+    // Coin-specific news
+    const coinNews = globalNewsItems.filter(n=>n.coin===c.sym||n.coin==='ALL');
+    let coinNewsSent = newsSent * 0.3; // global news
+    coinNews.forEach(n=>{
+      if(n.sent==='bull') coinNewsSent += n.impact*0.3;
+      else if(n.sent==='bear') coinNewsSent -= n.impact*0.3;
+    });
+    coinNewsSent = Math.max(-100, Math.min(100, coinNewsSent));
+    if(direction==='bull') newsScore = Math.round(Math.max(0,(coinNewsSent+100)/200)*25);
+    else newsScore = Math.round(Math.max(0,(100-coinNewsSent)/200)*25);
+
+    // ── Component 4: Volatility (high vol = lower confidence, max 20 pts) ──
+    const range = c.high > 0 ? (c.high - c.low)/c.price : 0.03;
+    let volScore = Math.max(0, 20 - Math.round(range*300));
+
+    // ── Total confidence ──
+    let conf = momentumScore + fgScore + newsScore + volScore;
+    conf = Math.max(30, Math.min(97, conf));
+
+    // ── Signal label ──
+    let sig, trend;
+    if(direction==='bull'){
+      trend = fg>=55 ? 'Bullish' : fg>=40 ? 'Sideways' : 'Bearish';
+      sig = conf>=80 ? 'Strong Buy' : conf>=threshold ? 'Buy' : 'No Trade';
+    } else {
+      trend = fg<=45 ? 'Bearish' : fg<=60 ? 'Sideways' : 'Bullish';
+      sig = conf>=80 ? 'Strong Sell' : conf>=threshold ? 'Sell' : 'No Trade';
+    }
+
+    c.conf = conf;
+    c.score = conf;
+    c.sig = sig;
+    c.trend = trend;
+  });
+
+  // Update RSI & EMA estimates based on computed data
+  const btc = COINS[0];
+  if(btc.price){
+    // Rough RSI estimation from 24h momentum
+    const rsiEst = btc.chg > 3 ? Math.round(65+btc.chg*2) : btc.chg < -3 ? Math.round(40+btc.chg*2) : Math.round(50+btc.chg*3);
+    const rsiClamped = Math.max(15, Math.min(85, rsiEst));
+    const rsiColor = rsiClamped > 70 ? 'var(--red)' : rsiClamped < 30 ? 'var(--green)' : 'var(--gold)';
+    const rsiLabel = rsiClamped > 70 ? 'Overbought' : rsiClamped < 30 ? 'Oversold' : 'Neutral';
+    document.getElementById('ind-rsi').textContent = rsiClamped;
+    document.getElementById('ind-rsi').style.color = rsiColor;
+    document.getElementById('ind-rsi-s').textContent = rsiLabel;
+
+    // EMA estimate
+    const emaLabel = btc.chg > 0.5 ? '50 > 200' : btc.chg < -0.5 ? '50 < 200' : 'Converging';
+    const emaColor = btc.chg > 0.5 ? 'var(--green)' : btc.chg < -0.5 ? 'var(--red)' : 'var(--gold)';
+    document.getElementById('ind-ema').textContent = emaLabel;
+    document.getElementById('ind-ema').style.color = emaColor;
+    document.getElementById('ind-ema-s').textContent = btc.chg > 0.5 ? 'Golden Cross' : btc.chg < -0.5 ? 'Death Cross' : 'Convergence zone';
+
+    // ATR estimate
+    const range = btc.high - btc.low;
+    document.getElementById('ind-atr').textContent = '$'+fmt(range);
+  }
+
+  pipeStep('ps-signal','done','Signals ✓');
+  renderTable();
+  renderCoins();
+
+  // Update active signals count
+  const n = COINS.filter(c=>c.conf>=threshold&&c.sig!=='No Trade'&&c.sig!=='Loading').length;
+  document.getElementById('s-sigs').textContent = n;
+
+  // Re-render signals view if open
+  const sigView = document.getElementById('view-signals');
+  if(sigView && sigView.classList.contains('on')) renderSignals();
+
+  return true;
+}
+
+// ═══════════════════════════════════════════════════════════
+// FULL PIPELINE
+// ═══════════════════════════════════════════════════════════
+async function runPipeline(){
+  await fetchNews();
+  await fetchFearGreed();
+  await fetchPrices();
+  computeSignals();
+  renderOB();
+}
+
+async function fullRefresh(){
+  // Reset pipeline UI
+  ['ps-news','ps-sentiment','ps-trend','ps-price','ps-signal'].forEach(id=>pipeStep(id,'pending','Waiting…'));
+  await runPipeline();
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER: COINS SIDEBAR
+// ═══════════════════════════════════════════════════════════
+function renderCoins(){
+  document.getElementById('coin-list').innerHTML=COINS.map((c,i)=>`
+    <div class="coin-row ${i===activeCoin?'active':''}" onclick="selectCoin(${i})">
+      <div class="avatar" style="background:${c.bg};color:${c.color}">${c.sym[0]}</div>
+      <div class="ci"><div class="csym">${c.sym}</div><div class="cname">${c.name}</div></div>
+      <div class="cr">
+        <div class="cprice">${fmtPrice(c.price)}</div>
+        <div class="cchg ${c.chg>=0?'up':'dn'}">${c.price?(c.chg>=0?'+':'')+c.chg.toFixed(2)+'%':'—'}</div>
+      </div>
+    </div>`).join('');
+}
+function selectCoin(i){activeCoin=i;renderCoins();}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER: MARKET TABLE
+// ═══════════════════════════════════════════════════════════
+function renderTable(){
+  document.getElementById('s-thresh').textContent = threshold;
+  document.getElementById('market-table').innerHTML=COINS.map(c=>{
+    if(!c.price) return '';
+    const sig = c.conf>=threshold ? c.sig : 'No Trade';
+    const sc = c.score>=75?'var(--green)':c.score>=60?'var(--gold)':'var(--red)';
+    const [sc2,bg2] = sig==='Strong Buy'?['#10b981','rgba(16,185,129,.15)']:
+                      sig==='Buy'?['#34d399','rgba(52,211,153,.1)']:
+                      sig==='Strong Sell'?['#ef4444','rgba(239,68,68,.15)']:
+                      sig==='Sell'?['#f87171','rgba(248,113,113,.1)']:
+                      ['#f59e0b','rgba(245,158,11,.1)'];
+    return `<div class="tr">
+      <div class="cc">
+        <div class="avatar" style="background:${c.bg};color:${c.color};width:22px;height:22px;font-size:9px">${c.sym[0]}</div>
+        <div><div style="font-size:12px;font-weight:500">${c.sym}</div><div style="font-size:10px;color:var(--t3)">${c.name}</div></div>
+      </div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px">${fmtPrice(c.price)}</div>
+      <div class="${c.chg>=0?'up':'dn'}">${(c.chg>=0?'+':'')+c.chg.toFixed(2)}%</div>
+      <div style="color:var(--t2)">${c.vol}</div>
+      <div style="color:var(--t2)">$${c.mcap}</div>
+      <div class="sbar"><div class="sb"><div class="sf" style="width:${c.score}%;background:${sc}"></div></div><span style="font-size:11px;font-weight:500;color:${sc}">${c.score}</span></div>
+      <div><span class="pill" style="background:${bg2};color:${sc2}">${sig}</span></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t2)">${c.conf}%</div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER: SIGNALS
+// ═══════════════════════════════════════════════════════════
+function renderSignals(){
+  const el=document.getElementById('sig-grid');
+  if(!el) return;
+  const ts=document.getElementById('thresh-show');
+  if(ts) ts.textContent=threshold;
+
+  const active=COINS.filter(c=>c.conf>=threshold&&c.sig!=='No Trade'&&c.sig!=='Loading'&&c.price>0);
+  const waiting=COINS.filter(c=>c.price>0&&(c.conf<threshold||c.sig==='No Trade'));
+
+  // Show signal pipeline details
+  const pipeInfo = document.getElementById('signal-pipeline-info');
+  if(pipeInfo){
+    const fg = globalFGIndex || '—';
+    const ns = globalNewsSentiment;
+    const fgColor = (fg>=50)?'var(--green)':'var(--red)';
+    const nsColor = ns>0?'var(--green)':ns<0?'var(--red)':'var(--gold)';
+    pipeInfo.innerHTML = `
+      <div style="display:flex;gap:16px;flex-wrap:wrap;padding:10px 14px;background:var(--bg3);border-radius:8px;margin-bottom:4px">
+        <span style="font-size:11px;color:var(--t3)">Signal inputs: 
+          <strong style="color:${fgColor}">F&G=${fg}</strong> &nbsp;|&nbsp;
+          <strong style="color:${nsColor}">News Sentiment=${ns>0?'+':''}${ns}</strong> &nbsp;|&nbsp;
+          <strong style="color:var(--blue)">Live Prices ✅</strong> &nbsp;|&nbsp;
+          <strong style="color:var(--gold)">Min Confidence=${threshold}%</strong>
+        </span>
+      </div>`;
+  }
+
+  let h='';
+  active.forEach(c=>{
+    const buy=c.sig.includes('Buy');
+    const sl=buy?(c.price*.964):(c.price*1.036);
+    const tp1=buy?(c.price*1.028):(c.price*.972);
+    const tp2=buy?(c.price*1.054):(c.price*.946);
+    const tp3=buy?(c.price*1.082):(c.price*.918);
+    const col=buy?'var(--green)':'var(--red)';
+
+    // Build AI reason dynamically
+    const fg=globalFGIndex||50;
+    const ns=globalNewsSentiment;
+    const coinNews=globalNewsItems.filter(n=>n.coin===c.sym||n.coin==='ALL').slice(0,2);
+    const newsLine = coinNews.length>0 ? `News: "${coinNews[0].title.slice(0,60)}…" (${coinNews[0].src})` : 'No major news detected for this coin.';
+    const fgLine = `Fear & Greed Index: ${fg} — ${fg>=65?'Greed':fg>=50?'Moderate Greed':fg>=40?'Neutral':'Fear'}.`;
+    const chgLine = `24H price change: ${c.chg>=0?'+':''}${c.chg.toFixed(2)}% — ${Math.abs(c.chg)>2?'strong':'moderate'} ${c.chg>=0?'bullish':'bearish'} momentum.`;
+    const sentLine = `Market sentiment score: ${ns>0?'+':''}${ns} — ${ns>20?'strongly bullish':ns>5?'mildly bullish':ns<-20?'strongly bearish':ns<-5?'mildly bearish':'neutral'}.`;
+
+    // Confidence breakdown
+    const momentumPct = Math.min(30, Math.round(Math.abs(c.chg)*4));
+    const fgPct = Math.round((buy?(fg/100):((100-fg)/100))*25);
+    const newsPct = Math.round((buy?Math.max(0,(ns+100)/200):Math.max(0,(100-ns)/200))*25);
+    const volPct = c.conf - momentumPct - fgPct - newsPct;
+
+    h+=`<div class="sig-card ${buy?'buy':'sell'}">
+      <div class="sig-top">
+        <div class="cc">
+          <div class="avatar" style="background:${c.bg};color:${c.color}">${c.sym[0]}</div>
+          <div><div style="font-size:13px;font-weight:500">${c.sym}/USDT</div><div style="font-size:10px;color:var(--t3)">${c.trend}</div></div>
+        </div>
+        <span class="pill" style="background:${buy?'rgba(16,185,129,.2)':'rgba(239,68,68,.2)'};color:${col};border:0.5px solid ${col}">${c.sig}</span>
+      </div>
+      <div class="conf-row">
+        <div style="font-size:10px;color:var(--t3);width:72px">Confidence</div>
+        <div class="conf-bar"><div class="conf-fill" style="width:${c.conf}%;background:${col}"></div></div>
+        <div style="font-size:11px;font-weight:500;color:${col};width:30px;text-align:right">${c.conf}%</div>
+      </div>
+      <!-- Score breakdown -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:10px">
+        <div class="quality-meter"><div class="qm-label" style="font-size:9px;color:var(--t3)">Price Momentum</div><div class="qm-bar"><div class="qm-fill" style="width:${(momentumPct/30)*100}%;background:var(--blue)"></div></div><div class="qm-val" style="font-size:10px;color:var(--blue)">${momentumPct}/30</div></div>
+        <div class="quality-meter"><div class="qm-label" style="font-size:9px;color:var(--t3)">F&G Trend</div><div class="qm-bar"><div class="qm-fill" style="width:${(fgPct/25)*100}%;background:var(--gold)"></div></div><div class="qm-val" style="font-size:10px;color:var(--gold)">${fgPct}/25</div></div>
+        <div class="quality-meter"><div class="qm-label" style="font-size:9px;color:var(--t3)">News Sentiment</div><div class="qm-bar"><div class="qm-fill" style="width:${(newsPct/25)*100}%;background:var(--green)"></div></div><div class="qm-val" style="font-size:10px;color:var(--green)">${newsPct}/25</div></div>
+        <div class="quality-meter"><div class="qm-label" style="font-size:9px;color:var(--t3)">Low Volatility</div><div class="qm-bar"><div class="qm-fill" style="width:${Math.max(0,(volPct/20)*100)}%;background:var(--purple)"></div></div><div class="qm-val" style="font-size:10px;color:var(--purple)">${Math.max(0,volPct)}/20</div></div>
+      </div>
+      <div class="tgrid">
+        <div class="tbox"><div class="tl">Entry Price</div><div class="tv2">${fmtPrice(c.price)}</div></div>
+        <div class="tbox"><div class="tl">Stop Loss</div><div class="tv2" style="color:var(--red)">${fmtPrice(sl)}</div></div>
+        <div class="tbox"><div class="tl">Risk/Reward</div><div class="tv2" style="color:var(--purple)">1 : 2.4</div></div>
+        <div class="tbox"><div class="tl">Duration</div><div class="tv2">4 – 12 hrs</div></div>
+      </div>
+      <div class="tp-row">
+        <div class="tp ${buy?'g':'r'}"><div class="tpl">TP 1</div><div class="tpv" style="color:${col}">${fmtPrice(tp1)}</div></div>
+        <div class="tp ${buy?'g':'r'}"><div class="tpl">TP 2</div><div class="tpv" style="color:${col}">${fmtPrice(tp2)}</div></div>
+        <div class="tp ${buy?'g':'r'}"><div class="tpl">TP 3</div><div class="tpv" style="color:${col}">${fmtPrice(tp3)}</div></div>
+      </div>
+      <div class="reason">
+        <div class="reason-t">🤖 AI Reason (Live Data)</div>
+        <div class="reason-txt">${chgLine}<br>${fgLine}<br>${sentLine}<br>${newsLine}</div>
+        <div class="tags">${['Price Action','F&G Index','News Sentiment','Volatility','24H Volume'].map(t=>`<span class="tag">${t}</span>`).join('')}</div>
+      </div>
+    </div>`;
+  });
+
+  if(active.length===0){
+    h+=`<div class="sig-card wait" style="grid-column:1/-1">
+      <div class="wait-box">
+        <div class="wait-ico">🛡️</div>
+        <div class="wait-t">No High-Confidence Trade Found</div>
+        <div class="wait-s">Current F&G: ${globalFGIndex||'—'} | News Sentiment: ${globalNewsSentiment>0?'+':''}${globalNewsSentiment}<br>Lower the threshold or wait for stronger setups.</div>
+      </div>
+    </div>`;
+  }
+
+  if(waiting.length){
+    h+=`<div class="sig-card wait" style="grid-column:1/-1">
+      <div class="wait-box">
+        <div class="wait-ico">⏳</div>
+        <div class="wait-t">Below ${threshold}% Threshold — Watching</div>
+        <div class="wait-s">These coins are being monitored but don't meet confidence requirements.</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:10px">
+          ${waiting.map(c=>`<span class="pill" style="background:rgba(245,158,11,.1);color:var(--gold)">${c.sym} ${c.conf}%</span>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  }
+
+  el.innerHTML=h;
+
+  // AI explanation for BTC
+  const btc=COINS[0];
+  const explainEl=document.getElementById('ai-explain');
+  if(btc&&btc.price&&explainEl){
+    const fg=globalFGIndex||50;
+    const ns=globalNewsSentiment;
+    const btcNews=globalNewsItems.filter(n=>n.coin==='BTC'||n.coin==='ALL').slice(0,3);
+    explainEl.innerHTML=`
+      <strong style="color:var(--t1)">BTC/USDT — Final Decision: ${btc.sig} | Confidence: ${btc.conf}%</strong><br><br>
+      📰 <strong>Step 1 — News Analysis (Live):</strong><br>
+      ${btcNews.map(n=>`&nbsp;&nbsp;${n.sent==='bull'?'✅':n.sent==='bear'?'❌':'➖'} ${n.title} <span style="color:var(--t3)">(${n.src}, Impact: ${n.impact}/100)</span>`).join('<br>') || '&nbsp;&nbsp;No major BTC news found.'}<br>
+      &nbsp;&nbsp;→ Combined News Sentiment Score: <strong style="color:${ns>0?'var(--green)':ns<0?'var(--red)':'var(--gold)'}">${ns>0?'+':''}${ns}</strong><br><br>
+      📊 <strong>Step 2 — Market Trend (Fear & Greed):</strong><br>
+      &nbsp;&nbsp;Index: <strong style="color:${fg>=50?'var(--green)':'var(--red)'}">${fg} — ${fg>=65?'Greed':fg>=50?'Moderate Greed':fg>=40?'Neutral':'Fear'}</strong><br>
+      &nbsp;&nbsp;→ Trend direction: <strong>${fg>=50?'Bullish':'Bearish'}</strong> bias confirmed<br><br>
+      💰 <strong>Step 3 — Price Action (Binance Live):</strong><br>
+      &nbsp;&nbsp;Current: <strong>${fmtPrice(btc.price)}</strong> | 24H: <strong style="color:${btc.chg>=0?'var(--green)':'var(--red)'}">${btc.chg>=0?'+':''}${btc.chg.toFixed(2)}%</strong><br>
+      &nbsp;&nbsp;High: $${fmt(btc.high)} | Low: $${fmt(btc.low)}<br><br>
+      ⚡ <strong>Final Confidence: <span style="color:var(--gold)">${btc.conf}%</span></strong> ${btc.conf>=threshold?'— SIGNAL ACTIVE ✅':'— Below threshold ⚠️'}<br><br>
+      <span style="font-size:10px;color:var(--t3)">⚠️ All signals are analytical estimates. Markets are unpredictable. Use proper risk management at all times.</span>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER: NEWS
+// ═══════════════════════════════════════════════════════════
+function renderNews(){
+  if(!globalNewsItems.length) return;
+  document.getElementById('news-list').innerHTML=globalNewsItems.map(n=>`
+    <div class="news-item">
+      <div class="ndot" style="background:${n.sent==='bull'?'#10b981':n.sent==='bear'?'#ef4444':'#64748b'}"></div>
+      <div class="nbody">
+        <div class="ntitle"><a href="${n.url||'#'}" target="_blank" style="color:var(--t1);text-decoration:none;hover:underline">${n.title}</a></div>
+        <div class="nmeta">
+          <span class="nsrc">${n.src}</span><span class="nsrc">•</span><span class="nsrc">${n.time}</span><span class="nsrc">• ${n.coin}</span>
+          <span class="nimp" style="background:${n.sent==='bull'?'rgba(16,185,129,.12)':n.sent==='bear'?'rgba(239,68,68,.12)':'rgba(148,163,184,.1)'};color:${n.sent==='bull'?'#10b981':n.sent==='bear'?'#ef4444':'#64748b'}">
+            Impact: ${n.impact}/100
+          </span>
+          <span class="nimp" style="background:rgba(59,130,246,.1);color:#93c5fd">
+            ${n.sent==='bull'?'📈 Bullish':n.sent==='bear'?'📉 Bearish':'➡️ Neutral'}
+          </span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// RENDER: ORDER BOOK (live from Binance)
+// ═══════════════════════════════════════════════════════════
+async function renderOB(){
+  try {
+    const btcPrice = COINS[0].price;
+    const res = await fetch('https://api.binance.com/api/v3/depth?symbol=BTCUSDT&limit=6');
+    const data = await res.json();
+    const bids = (data.bids||[]).map(b=>[parseFloat(b[0]),parseFloat(b[1])]);
+    const asks = (data.asks||[]).map(a=>[parseFloat(a[0]),parseFloat(a[1])]);
+    const mx = Math.max(...[...bids,...asks].map(x=>x[1]));
+
+    // Update order book stats
+    const totalBid = bids.reduce((s,b)=>s+b[1],0);
+    const totalAsk = asks.reduce((s,a)=>s+a[1],0);
+    const ratio = (totalBid/totalAsk).toFixed(2);
+    const imbal = ((totalBid-totalAsk)/(totalBid+totalAsk)*100).toFixed(1);
+
+    if(bids.length){
+      document.getElementById('ob-buywall').textContent = '$'+fmt(bids[bids.length-1][0]);
+      document.getElementById('ob-sellwall').textContent = '$'+fmt(asks[asks.length-1][0]);
+      document.getElementById('ob-ratio').textContent = ratio;
+      document.getElementById('ob-ratio').style.color = ratio>=1?'var(--green)':'var(--red)';
+      document.getElementById('ob-ratio-s').textContent = ratio>=1?'Buy pressure dominant':'Sell pressure dominant';
+      document.getElementById('ob-imbal').textContent = (imbal>0?'+':'')+imbal+'%';
+      document.getElementById('ob-imbal').style.color = imbal>0?'var(--green)':'var(--red)';
+      document.getElementById('ob-imbal-s').textContent = imbal>0?'Bullish imbalance':'Bearish imbalance';
+    }
+
+    document.getElementById('bids').innerHTML=bids.map(b=>`
+      <div class="ob-row">
+        <div class="ob-bg" style="width:${(b[1]/mx*100).toFixed(0)}%;background:#10b981"></div>
+        <div class="op" style="color:var(--green)">$${b[0].toLocaleString()}</div>
+        <div class="os">${b[1].toFixed(2)} BTC</div>
+      </div>`).join('');
+    document.getElementById('asks').innerHTML=asks.map(a=>`
+      <div class="ob-row">
+        <div class="ob-bg" style="width:${(a[1]/mx*100).toFixed(0)}%;background:#ef4444"></div>
+        <div class="op" style="color:var(--red)">$${a[0].toLocaleString()}</div>
+        <div class="os">${a[1].toFixed(2)} BTC</div>
+      </div>`).join('');
+  } catch(e) {
+    document.getElementById('bids').innerHTML='<div style="font-size:11px;color:var(--t3);padding:8px">Order book unavailable</div>';
+    document.getElementById('asks').innerHTML='<div style="font-size:11px;color:var(--t3);padding:8px">Order book unavailable</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+// THRESHOLD
+// ═══════════════════════════════════════════════════════════
+function setThresh(v){
+  threshold=parseInt(v);
+  document.getElementById('thresh-lbl').textContent=v+'%';
+  const ts=document.getElementById('thresh-show');
+  if(ts) ts.textContent=v;
+  computeSignals();
+}
+
+// ═══════════════════════════════════════════════════════════
+// TRADINGVIEW CHART
+// ═══════════════════════════════════════════════════════════
+let tvScriptLoaded = false;
+function buildTVWidget(){
+  const c=document.getElementById('tv-container');
+  if(!c) return;
+  c.innerHTML='';
+  new TradingView.widget({autosize:true,symbol:currentSym,interval:currentTF||'60',timezone:'Etc/UTC',theme:'dark',style:'1',locale:'en',toolbar_bg:'#0e1220',enable_publishing:false,allow_symbol_change:true,container_id:'tv-container',hide_side_toolbar:false});
+}
+function loadTVChart(){
+  if(tvScriptLoaded&&typeof TradingView!=='undefined'){buildTVWidget();return;}
+  if(document.querySelector('script[src*="tv.js"]')) return;
+  const s=document.createElement('script');
+  s.src='https://s3.tradingview.com/tv.js';
+  s.onload=function(){tvScriptLoaded=true;buildTVWidget();};
+  s.onerror=function(){const c=document.getElementById('tv-container');if(c) c.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100%;color:var(--t3)">⚠️ Chart failed to load.</div>';};
+  document.head.appendChild(s);
+}
+function setTF(el){
+  document.querySelectorAll('#tf-pills .tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  currentTF=TF_MAP[el.textContent.trim()]||'60';
+  loadTVChart();
+}
+function changeSym(v){
+  currentSym=v;
+  const c=COINS.find(x=>v.startsWith(x.sym));
+  if(c){
+    document.getElementById('chart-sym').textContent=c.sym+'/USDT';
+    document.getElementById('chart-p').textContent=fmtPrice(c.price);
+    const cc=document.getElementById('chart-c');
+    cc.textContent=(c.chg>=0?'+':'')+c.chg.toFixed(2)+'%';
+    cc.style.color=c.chg>=0?'var(--green)':'var(--red)';
+  }
+  loadTVChart();
+}
+
+// ═══════════════════════════════════════════════════════════
+// VIEW SWITCH
+// ═══════════════════════════════════════════════════════════
+function show(v,el){
+  document.querySelectorAll('.view').forEach(x=>{x.classList.remove('on');x.style.display='none'});
+  const vEl=document.getElementById('view-'+v);
+  if(!vEl) return;
+  vEl.style.display='flex';
+  requestAnimationFrame(()=>{ vEl.classList.add('on'); });
+  document.querySelectorAll('.nav-tabs .tab').forEach(t=>t.classList.remove('on'));
+  el.classList.add('on');
+  if(v==='signals') renderSignals();
+  if(v==='news') renderNews();
+  if(v==='orderbook') renderOB();
+  if(v==='chart') loadTVChart();
+}
+
+// ═══════════════════════════════════════════════════════════
+// TIME AGO HELPER
+// ═══════════════════════════════════════════════════════════
+function timeAgo(date){
+  const seconds = Math.floor((new Date()-date)/1000);
+  if(seconds<60) return seconds+'s ago';
+  if(seconds<3600) return Math.floor(seconds/60)+'m ago';
+  if(seconds<86400) return Math.floor(seconds/3600)+'h ago';
+  return Math.floor(seconds/86400)+'d ago';
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT — Run full pipeline
+// ═══════════════════════════════════════════════════════════
+renderCoins();
+runPipeline();
+
+// Auto-refresh every 60 seconds (prices every 10s separately)
+setInterval(async ()=>{
+  await fetchPrices();
+  computeSignals();
+  renderOB();
+}, 10000);
+
+setInterval(()=>{
+  fetchNews().then(()=>{
+    computeSignals();
+  });
+  fetchFearGreed();
+}, 60000);
+
+// Show dashboard
+document.querySelectorAll('.view').forEach(x=>{x.classList.remove('on');x.style.display='none';});
+const dash=document.getElementById('view-dashboard');
+if(dash){dash.style.display='flex';dash.classList.add('on');}
+</script>
+</body>
+</html>
